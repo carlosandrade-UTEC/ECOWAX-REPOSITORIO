@@ -9,6 +9,7 @@ import {
   SortingState,
 } from '@tanstack/react-table';
 import { ArrowUpDown, ArrowUp, ArrowDown, Search } from 'lucide-react';
+import { EmptyState } from './EmptyState';
 
 interface DataTableProps<TData> {
   data: TData[];
@@ -105,8 +106,11 @@ export function DataTable<TData>({
           <tbody className="divide-y divide-slate-100">
             {table.getRowModel().rows.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="text-center py-8 text-slate-500 font-medium">
-                  No se encontraron resultados para el filtro actual.
+                <td colSpan={columns.length} className="py-6">
+                  <EmptyState
+                    title="No hay registros"
+                    message="No se encontraron datos disponibles bajo los filtros aplicados."
+                  />
                 </td>
               </tr>
             ) : (

@@ -4,6 +4,8 @@ import { useAppStore } from '../store/useAppStore';
 import { Recomendacion } from '../types';
 import { Unauthorized403 } from './Unauthorized403';
 import { formatoFechaISOAFormatoPeruano, formatoNumero } from '../engine/formato';
+import { ErrorState } from '../components/ui/ErrorState';
+import { EmptyState } from '../components/ui/EmptyState';
 import {
   CheckSquare,
   CheckCircle2,
@@ -17,11 +19,15 @@ import {
 
 export function RecomendacionesPage() {
   const navigate = useNavigate();
-  const { recomendaciones, skus, proveedores, getPermiso } = useAppStore();
+  const { recomendaciones, skus, proveedores, getPermiso, loading, error, loadInitialData } = useAppStore();
   const permiso = getPermiso('recomendaciones');
 
   if (permiso === 'NINGUNO') {
     return <Unauthorized403 />;
+  }
+
+  if (error) {
+    return <ErrorState errorMessage={error} onRetry={loadInitialData} />;
   }
 
   return (
@@ -41,7 +47,13 @@ export function RecomendacionesPage() {
         </span>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {recomendaciones.length === 0 ? (
+        <EmptyState
+          title="No hay recomendaciones registradas"
+          message="El motor no ha generado propuestas de compra pendientes de evaluación para el periodo activo."
+        />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {recomendaciones.map((rec) => {
           const skuInfo = skus.find((s) => s.sku_id === rec.sku_id);
           const provRec = proveedores.find((p) => p.proveedor_id === rec.proveedor_recomendado);
@@ -135,6 +147,7 @@ export function RecomendacionesPage() {
           );
         })}
       </div>
+      )}
     </div>
   );
 }
