@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { mockProvider } from '../services/mockProvider';
+import { dataProvider } from '../services/dataProvider';
 import { RegistroAuditoria, Usuario } from '../types';
 import {
   ShieldCheck,
@@ -33,8 +33,8 @@ export function AuditoríaPage() {
     setError(null);
     try {
       const [data, userList] = await Promise.all([
-        mockProvider.getAuditoria(),
-        mockProvider.getUsuarios(),
+        dataProvider.getAuditoria(),
+        dataProvider.getUsuarios(),
       ]);
       setLogs(data);
       setUsuarios(userList);

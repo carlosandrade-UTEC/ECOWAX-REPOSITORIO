@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { mockProvider } from '../services/mockProvider';
+import { dataProvider } from '../services/dataProvider';
 import { Usuario, RolUsuario, ModuloApp, PermisoNivel, PermisosMapa } from '../types';
 import { Unauthorized403 } from './Unauthorized403';
 import {
@@ -66,8 +66,8 @@ export function UsuariosPage() {
     setError(null);
     try {
       const [uList, pMapa] = await Promise.all([
-        mockProvider.getUsuarios(),
-        mockProvider.getPermisos(),
+        dataProvider.getUsuarios(),
+        dataProvider.getPermisos(),
       ]);
       setUsuarios(uList);
       setPermisosMapa(pMapa);
@@ -94,7 +94,7 @@ export function UsuariosPage() {
 
     setSavingAlta(true);
     try {
-      await mockProvider.createUsuario({
+      await dataProvider.createUsuario({
         nombre: nuevoNombre.trim(),
         rol: nuevoRol,
         area: nuevaArea.trim() || 'Operaciones',
@@ -122,7 +122,7 @@ export function UsuariosPage() {
     if (!window.confirm(confirmMsg)) return;
 
     try {
-      await mockProvider.toggleUsuarioEstado(u.usuario_id, nuevoEst);
+      await dataProvider.toggleUsuarioEstado(u.usuario_id, nuevoEst);
       await cargarDatos();
     } catch (err: any) {
       alert('Error al actualizar estado: ' + err.message);
@@ -133,7 +133,7 @@ export function UsuariosPage() {
   const handleCambiarRol = async (u: Usuario, rolNuevo: RolUsuario) => {
     if (u.rol === rolNuevo) return;
     try {
-      await mockProvider.updateUsuarioRol(u.usuario_id, rolNuevo);
+      await dataProvider.updateUsuarioRol(u.usuario_id, rolNuevo);
       await cargarDatos();
     } catch (err: any) {
       alert('Error al actualizar rol: ' + err.message);

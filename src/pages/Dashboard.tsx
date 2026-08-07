@@ -9,7 +9,8 @@ import { ErrorState } from '../components/ui/ErrorState';
 import { ConsumoVsVolumenChart } from '../components/charts/ConsumoVsVolumenChart';
 import { OtifZonaChart } from '../components/charts/OtifZonaChart';
 import { formatoFechaISOAFormatoPeruano, formatoNumero, formatoPorcentaje } from '../engine/formato';
-import { mockProvider } from '../services/mockProvider';
+import { ordenarAlertasPorCriticidad } from '../engine';
+import { dataProvider } from '../services/dataProvider';
 import { ConsumoMensual, ToneladasFruta, Pronostico } from '../types';
 import {
   ResponsiveContainer,
@@ -54,9 +55,9 @@ export function Dashboard() {
 
   React.useEffect(() => {
     Promise.all([
-      mockProvider.getConsumoMensual(),
-      mockProvider.getToneladasFruta(),
-      mockProvider.getPronosticos(),
+      dataProvider.getConsumoMensual(),
+      dataProvider.getToneladasFruta(),
+      dataProvider.getPronosticos(),
     ]).then(([consumo, fruta, pron]) => {
       setConsumoHistorico(consumo);
       setToneladasFruta(fruta);
@@ -87,13 +88,7 @@ export function Dashboard() {
   }
 
   // BLOQUE 3: Alertas activas ordenadas por criticidad y fecha límite (NUNCA alfabéticamente)
-  const alertasOrdenadas = [...alertas].sort((a, b) => {
-    const critOrder = { CRITICA: 1, ALTA: 2, MEDIA: 3, BAJA: 4 };
-    if (critOrder[a.criticidad] !== critOrder[b.criticidad]) {
-      return critOrder[a.criticidad] - critOrder[b.criticidad];
-    }
-    return a.fecha_limite_emision.localeCompare(b.fecha_limite_emision);
-  });
+  const alertasOrdenadas = ordenarAlertasPorCriticidad(alertas);
 
   // Calcular gráfico de consumo histórico + pronóstico con banda de confianza
   const consumoSku = consumoHistorico.filter((c) => c.sku_id === selectedSkuId);

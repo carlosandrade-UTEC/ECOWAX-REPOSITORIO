@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { mockProvider } from '../services/mockProvider';
+import { dataProvider } from '../services/dataProvider';
 import { Sku, ClaseABC } from '../types';
 import { Unauthorized403 } from './Unauthorized403';
 import { Database, Edit, AlertTriangle, CheckCircle2, Search, Filter } from 'lucide-react';
@@ -59,7 +59,7 @@ export function MaestroSkusPage() {
   const handleSaveSku = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingSku) return;
-    await mockProvider.updateSku(editingSku);
+    await dataProvider.updateSku(editingSku);
     await loadInitialData();
     setEditingSku(null);
     alert(`SKU ${editingSku.sku_id} actualizado correctamente en el maestro.`);

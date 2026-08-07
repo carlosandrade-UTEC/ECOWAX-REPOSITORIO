@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
-import { mockProvider } from '../services/mockProvider';
+import { dataProvider } from '../services/dataProvider';
 import { Usuario } from '../types';
 import { Shield, ArrowRight, CheckCircle2 } from 'lucide-react';
 
@@ -12,7 +12,7 @@ export function Login() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    mockProvider.getUsuarios().then((list) => {
+    dataProvider.getUsuarios().then((list) => {
       setUsuarios(list);
       if (list.length > 0) setSelectedUserId(list[0].usuario_id);
     });

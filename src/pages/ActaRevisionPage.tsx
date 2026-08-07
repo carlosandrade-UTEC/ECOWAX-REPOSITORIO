@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { mockProvider } from '../services/mockProvider';
+import { dataProvider } from '../services/dataProvider';
 import { RevisionMensual, Decision, AccionRevision, Sku } from '../types';
 import { formatoFechaISOAFormatoPeruano } from '../engine/formato';
 import { Printer, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucide-react';
@@ -14,10 +14,10 @@ export function ActaRevisionPage() {
 
   React.useEffect(() => {
     Promise.all([
-      mockProvider.getRevisiones(),
-      mockProvider.getDecisiones(),
-      mockProvider.getAccionesRevision(),
-      mockProvider.getSkus(),
+      dataProvider.getRevisiones(),
+      dataProvider.getDecisiones(),
+      dataProvider.getAccionesRevision(),
+      dataProvider.getSkus(),
     ]).then(([revs, decs, accs, skuList]) => {
       const found = revs.find((r) => r.review_id === id) || revs[revs.length - 1];
       setReview(found);

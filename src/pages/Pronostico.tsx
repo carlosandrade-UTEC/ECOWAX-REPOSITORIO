@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { mockProvider } from '../services/mockProvider';
-import { Pronostico, ConsumoMensual } from '../types';
+import { dataProvider } from '../services/dataProvider';
+import { Pronostico as PronosticoType, ConsumoMensual } from '../types';
 import { formatoNumero, formatoPorcentaje } from '../engine/formato';
 import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
 import { ErrorState } from '../components/ui/ErrorState';
@@ -20,13 +20,13 @@ import { TrendingUp, AlertTriangle, Cpu, Calendar, CheckCircle2 } from 'lucide-r
 export function PronosticoPage() {
   const { skus, loading, error, loadInitialData } = useAppStore();
   const [selectedSkuId, setSelectedSkuId] = React.useState<string>('INS-001');
-  const [pronosticos, setPronosticos] = React.useState<Pronostico[]>([]);
+  const [pronosticos, setPronosticos] = React.useState<PronosticoType[]>([]);
   const [historico, setHistorico] = React.useState<ConsumoMensual[]>([]);
 
   React.useEffect(() => {
     Promise.all([
-      mockProvider.getPronosticos(selectedSkuId),
-      mockProvider.getConsumoMensual(selectedSkuId),
+      dataProvider.getPronosticos(selectedSkuId),
+      dataProvider.getConsumoMensual(selectedSkuId),
     ]).then(([pron, hist]) => {
       setPronosticos(pron);
       setHistorico(hist);

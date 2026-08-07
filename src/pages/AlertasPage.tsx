@@ -4,6 +4,7 @@ import { useAppStore } from '../store/useAppStore';
 import { CriticidadBadge, AbcBadge } from '../components/ui/Badge';
 import { Unauthorized403 } from './Unauthorized403';
 import { formatoFechaISOAFormatoPeruano, formatoNumero } from '../engine/formato';
+import { ordenarAlertasPorCriticidad } from '../engine';
 import {
   AlertTriangle,
   ArrowRight,
@@ -69,16 +70,7 @@ export function AlertasPage() {
   });
 
   // Ordenamiento por defecto: criticidad descendente (CRITICA=1, ALTA=2, MEDIA=3, BAJA=4) y luego fecha limite ascendente
-  const alertasOrdenadas = [...alertasFiltradas].sort((a, b) => {
-    const critOrder: Record<string, number> = { CRITICA: 1, ALTA: 2, MEDIA: 3, BAJA: 4 };
-    const orderA = critOrder[a.criticidad] || 5;
-    const orderB = critOrder[b.criticidad] || 5;
-
-    if (orderA !== orderB) {
-      return orderA - orderB;
-    }
-    return a.fecha_limite_emision.localeCompare(b.fecha_limite_emision);
-  });
+  const alertasOrdenadas = ordenarAlertasPorCriticidad(alertasFiltradas);
 
   // Badge de Estado de Alerta
   const renderEstadoBadge = (estado: string, diasRetraso: number) => {

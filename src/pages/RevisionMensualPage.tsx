@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
-import { mockProvider } from '../services/mockProvider';
+import { dataProvider } from '../services/dataProvider';
 import {
   RevisionMensual,
   AccionRevision,
@@ -52,12 +52,12 @@ export function RevisionMensualPage() {
 
   const cargarDatos = React.useCallback(async () => {
     const [revs, accs, recs, decs, kpiList, alrList] = await Promise.all([
-      mockProvider.getRevisiones(),
-      mockProvider.getAccionesRevision(),
-      mockProvider.getRecomendaciones(),
-      mockProvider.getDecisiones(),
-      mockProvider.getKpis(),
-      mockProvider.getAlertas(),
+      dataProvider.getRevisiones(),
+      dataProvider.getAccionesRevision(),
+      dataProvider.getRecomendaciones(),
+      dataProvider.getDecisiones(),
+      dataProvider.getKpis(),
+      dataProvider.getAlertas(),
     ]);
     setRevisiones(revs);
     setAcciones(accs);
@@ -107,7 +107,7 @@ export function RevisionMensualPage() {
   const compromisosAbiertos = acciones.filter((a) => a.estado !== 'CERRADA');
 
   const handleCerrarRevision = async () => {
-    const res = await mockProvider.closeRevision(reviewActual.review_id);
+    const res = await dataProvider.closeRevision(reviewActual.review_id);
     if (!res.success && res.pendingDecisions) {
       setPendingList(res.pendingDecisions);
       setShowPendingModal(true);
@@ -120,7 +120,7 @@ export function RevisionMensualPage() {
   const handleCrearCompromiso = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nuevaDescripcion.trim()) return;
-    await mockProvider.addAccionRevision({
+    await dataProvider.addAccionRevision({
       review_id: reviewActual.review_id,
       descripcion: nuevaDescripcion,
       responsable: nuevoResponsable,
@@ -134,7 +134,7 @@ export function RevisionMensualPage() {
 
   const handleToggleEstadoAccion = async (accionId: string, estadoActual: AccionRevision['estado']) => {
     const nuevoEstado = estadoActual === 'CERRADA' ? 'EN_CURSO' : 'CERRADA';
-    await mockProvider.updateAccionRevision(accionId, { estado: nuevoEstado });
+    await dataProvider.updateAccionRevision(accionId, { estado: nuevoEstado });
     await cargarDatos();
   };
 

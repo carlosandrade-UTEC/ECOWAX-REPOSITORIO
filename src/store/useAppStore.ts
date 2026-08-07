@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { mockProvider } from '../services/mockProvider';
+import { dataProvider } from '../services/dataProvider';
+import { ordenarAlertasPorCriticidad } from '../engine';
 import {
   Usuario,
   GlobalFilterState,
@@ -106,7 +107,7 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
         proveedores,
         zonas,
         campanias,
-        alertas,
+        rawAlertas,
         recomendaciones,
         decisiones,
         reorden,
@@ -116,20 +117,22 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
         permisosMapa,
         usuarios,
       ] = await Promise.all([
-        mockProvider.getSkus(),
-        mockProvider.getProveedores(),
-        mockProvider.getZonas(),
-        mockProvider.getCampanias(),
-        mockProvider.getAlertas(),
-        mockProvider.getRecomendaciones(),
-        mockProvider.getDecisiones(),
-        mockProvider.getReorden(),
-        mockProvider.getProyeccionesInventario(),
-        mockProvider.getUmbrales(),
-        mockProvider.getKpis(),
-        mockProvider.getPermisos(),
-        mockProvider.getUsuarios(),
+        dataProvider.getSkus(),
+        dataProvider.getProveedores(),
+        dataProvider.getZonas(),
+        dataProvider.getCampanias(),
+        dataProvider.getAlertas(),
+        dataProvider.getRecomendaciones(),
+        dataProvider.getDecisiones(),
+        dataProvider.getReorden(),
+        dataProvider.getProyeccionesInventario(),
+        dataProvider.getUmbrales(),
+        dataProvider.getKpis(),
+        dataProvider.getPermisos(),
+        dataProvider.getUsuarios(),
       ]);
+
+      const alertas = ordenarAlertasPorCriticidad(rawAlertas);
 
       set({
         skus,
@@ -158,11 +161,11 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
   submitDecision: async (data) => {
     set({ loading: true });
     try {
-      const decision = await mockProvider.submitDecision(data);
+      const decision = await dataProvider.submitDecision(data);
       // Recargar decisiones y recomendaciones
       const [newDecisiones, newRecomendaciones] = await Promise.all([
-        mockProvider.getDecisiones(),
-        mockProvider.getRecomendaciones(),
+        dataProvider.getDecisiones(),
+        dataProvider.getRecomendaciones(),
       ]);
       set({
         decisiones: newDecisiones,

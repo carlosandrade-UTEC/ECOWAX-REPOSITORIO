@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAppStore } from '../../store/useAppStore';
-import { mockProvider } from '../../services/mockProvider';
+import { dataProvider } from '../../services/dataProvider';
 import { Usuario } from '../../types';
 import { User, Calendar, RefreshCw, ChevronDown, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -12,7 +12,7 @@ export function TopBar() {
   const navigate = useNavigate();
 
   React.useEffect(() => {
-    mockProvider.getUsuarios().then(setUserList);
+    dataProvider.getUsuarios().then(setUserList);
   }, []);
 
   const handleSelectUser = (user: Usuario) => {

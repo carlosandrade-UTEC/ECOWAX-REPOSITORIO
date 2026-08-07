@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { mockProvider } from '../services/mockProvider';
+import { dataProvider } from '../services/dataProvider';
 import { CargaDatos, IssueCalidad } from '../types';
 import { ArrowLeft, CheckCircle2, AlertTriangle, FileSpreadsheet, ShieldAlert } from 'lucide-react';
 
@@ -10,7 +10,7 @@ export function ResultadoCargaPage() {
   const [issues, setIssues] = React.useState<IssueCalidad[]>([]);
 
   React.useEffect(() => {
-    Promise.all([mockProvider.getCargas(), mockProvider.getCalidad()]).then(
+    Promise.all([dataProvider.getCargas(), dataProvider.getCalidad()]).then(
       ([cargasList, qualityList]) => {
         const found = cargasList.find((c) => c.upload_id === id) || cargasList[0];
         setCarga(found);

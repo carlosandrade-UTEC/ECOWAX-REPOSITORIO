@@ -6,6 +6,7 @@ import { CriticidadBadge, AbcBadge } from '../components/ui/Badge';
 import { LoadingSkeleton, LoadingKpiGrid } from '../components/ui/LoadingSkeleton';
 import { ErrorState } from '../components/ui/ErrorState';
 import { formatoFechaISOAFormatoPeruano, formatoNumero } from '../engine/formato';
+import { ordenarAlertasPorCriticidad } from '../engine';
 import {
   AlertTriangle,
   Clock,
@@ -33,16 +34,10 @@ export function Inicio() {
     return <ErrorState errorMessage={error} onRetry={loadInitialData} />;
   }
 
-  // Filtrar alertas activas (NUEVA o EN_PROCESO)
-  const alertasActivas = alertas
-    .filter((a) => a.estado === 'NUEVA' || a.estado === 'EN_PROCESO')
-    .sort((a, b) => {
-      const critOrder = { CRITICA: 1, ALTA: 2, MEDIA: 3, BAJA: 4 };
-      if (critOrder[a.criticidad] !== critOrder[b.criticidad]) {
-        return critOrder[a.criticidad] - critOrder[b.criticidad];
-      }
-      return a.fecha_limite_emision.localeCompare(b.fecha_limite_emision);
-    });
+  // Filtrar alertas activas (NUEVA o EN_PROCESO) y ordenar por criticidad
+  const alertasActivas = ordenarAlertasPorCriticidad(
+    alertas.filter((a) => a.estado === 'NUEVA' || a.estado === 'EN_PROCESO')
+  );
 
   // Recomendaciones pendientes
   const recosPendientes = recomendaciones.filter((r) => r.estado === 'PENDIENTE');

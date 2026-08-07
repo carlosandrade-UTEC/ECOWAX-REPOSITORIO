@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Papa from 'papaparse';
 import { useAppStore } from '../store/useAppStore';
-import { mockProvider } from '../services/mockProvider';
+import { dataProvider } from '../services/dataProvider';
 import { CargaDatos, IssueCalidad, Sku } from '../types';
 import { Unauthorized403 } from './Unauthorized403';
 import {
@@ -94,7 +94,7 @@ export function CargaDatosPage() {
   const [loadingValidation, setLoadingValidation] = React.useState(false);
 
   const cargarBitacora = React.useCallback(async () => {
-    const list = await mockProvider.getCargas();
+    const list = await dataProvider.getCargas();
     setCargas(list);
   }, []);
 
@@ -361,7 +361,7 @@ export function CargaDatosPage() {
     };
 
     const finalIssues = issues.map((i) => ({ ...i, upload_id: newUploadId }));
-    await mockProvider.saveCarga(nuevaCarga, finalIssues);
+    await dataProvider.saveCarga(nuevaCarga, finalIssues);
 
     alert(`¡Carga ${newUploadId} confirmada exitosamente con ${filasOkCount} filas procesadas!`);
     setFile(null);

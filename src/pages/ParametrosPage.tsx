@@ -1,7 +1,7 @@
 import React from 'react';
 import { useAppStore } from '../store/useAppStore';
-import { mockProvider } from '../services/mockProvider';
-import { PoliticaVersion, SugerenciaParametro, Sku } from '../types';
+import { dataProvider } from '../services/dataProvider';
+import { Politica, PoliticaVersion, SugerenciaParametro, Sku } from '../types';
 import { Unauthorized403 } from './Unauthorized403';
 import {
   Sliders,
@@ -32,8 +32,8 @@ export function ParametrosPage() {
 
   const cargarPoliticasYSugerencias = React.useCallback(async () => {
     const [pList, sList] = await Promise.all([
-      mockProvider.getPoliticaVersiones(),
-      mockProvider.getSugerencias(),
+      dataProvider.getPoliticaVersiones(),
+      dataProvider.getSugerencias(),
     ]);
     setPoliticas(pList);
     setSugerencias(sList);
@@ -72,7 +72,7 @@ export function ParametrosPage() {
 
     if (!politicaActual) return;
 
-    await mockProvider.updatePolitica(
+    await dataProvider.updatePolitica(
       politicaActual.sku_id,
       {
         nivel_servicio: nuevoNivelServicio,
@@ -98,7 +98,7 @@ export function ParametrosPage() {
 
     if (!politicaActual) return;
 
-    await mockProvider.proposePolitica(
+    await dataProvider.proposePolitica(
       skuSeleccionado,
       'nivel_servicio_objetivo',
       politicaActual.nivel_servicio_objetivo,
@@ -117,7 +117,7 @@ export function ParametrosPage() {
     sugerenciaId: string,
     aprobada: boolean
   ) => {
-    await mockProvider.responderSugerencia(
+    await dataProvider.responderSugerencia(
       sugerenciaId,
       aprobada,
       currentUser?.usuario_id || 'USR-003'

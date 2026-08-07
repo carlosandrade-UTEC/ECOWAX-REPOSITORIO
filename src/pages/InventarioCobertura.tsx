@@ -7,7 +7,7 @@ import { DataTable } from '../components/ui/DataTable';
 import { LoadingSkeleton } from '../components/ui/LoadingSkeleton';
 import { ErrorState } from '../components/ui/ErrorState';
 import { formatoNumero, formatoFechaISOAFormatoPeruano } from '../engine/formato';
-import { mockProvider } from '../services/mockProvider';
+import { dataProvider } from '../services/dataProvider';
 import { ProyeccionInventario, ReordenCalculado, Sku } from '../types';
 import { ColumnDef } from '@tanstack/react-table';
 import { Package, Download, CheckCircle2, AlertTriangle, FileSpreadsheet } from 'lucide-react';
@@ -27,7 +27,7 @@ export function InventarioCobertura() {
   const [exportMessage, setExportMessage] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    mockProvider.getProyeccionesInventario(selectedSkuId).then(setProyeccionesSku);
+    dataProvider.getProyeccionesInventario(selectedSkuId).then(setProyeccionesSku);
   }, [selectedSkuId]);
 
   if (loading) {

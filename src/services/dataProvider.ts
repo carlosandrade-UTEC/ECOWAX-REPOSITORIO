@@ -24,6 +24,7 @@ import {
   PoliticaVersion,
   SugerenciaParametro,
 } from '../types';
+import { mockProvider } from './mockProvider';
 
 export interface DataProvider {
   getSkus(): Promise<Sku[]>;
@@ -83,3 +84,9 @@ export interface DataProvider {
   toggleUsuarioEstado(usuarioId: string, nuevoEstado: 'ACTIVO' | 'INACTIVO'): Promise<void>;
   updateUsuarioRol(usuarioId: string, nuevoRol: Usuario['rol']): Promise<void>;
 }
+
+/**
+ * Instancia del proveedor de datos por defecto conforme a la interfaz DataProvider.
+ * Permite cambiar la implementación (Mock vs Sheets) de forma transparente.
+ */
+export const dataProvider: DataProvider = mockProvider;
