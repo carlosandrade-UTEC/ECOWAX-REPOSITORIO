@@ -1,5 +1,6 @@
 import { DataProvider } from './dataProvider';
 import { SEED_DATA_RAW, expandir } from '../data/seed';
+import { RULES_VERSION } from '../engine/version';
 import {
   Sku,
   Proveedor,
@@ -306,6 +307,19 @@ class MockDataProvider implements DataProvider {
     if (issues && issues.length > 0) {
       this.calidad.unshift(...issues);
     }
+    // Toda carga confirmada genera una fila en app_auditoria
+    this.auditoria.unshift({
+      log_id: `AUD-${Date.now().toString().slice(-6)}`,
+      timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+      usuario_id: carga.usuario_id || 'USR-002',
+      entidad: 'fact_cargas',
+      entidad_id: carga.upload_id,
+      campo: 'estado',
+      valor_anterior: '',
+      valor_nuevo: carga.estado,
+      motivo: `Carga de datos confirmada (${carga.archivo}) en ${carga.tabla_destino} con ${carga.filas_ok} filas procesadas`,
+      version_regla: RULES_VERSION,
+    });
     return carga;
   }
 

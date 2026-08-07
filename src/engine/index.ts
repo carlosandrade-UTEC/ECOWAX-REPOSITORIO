@@ -6,3 +6,4 @@ export * from './recomendacion';
 export * from './consecuencia';
 export * from './formato';
 export * from './alerta';
+export * from './validacion';

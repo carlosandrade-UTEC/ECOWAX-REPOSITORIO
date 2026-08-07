@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import Papa from 'papaparse';
 import { useAppStore } from '../store/useAppStore';
 import { dataProvider } from '../services/dataProvider';
+import { validarCargaDatos } from '../engine';
 import { CargaDatos, IssueCalidad, Sku } from '../types';
 import { Unauthorized403 } from './Unauthorized403';
 import {
@@ -82,7 +83,7 @@ const TABLAS_CONFIG: Record<
 
 export function CargaDatosPage() {
   const navigate = useNavigate();
-  const { getPermiso, skus, currentUser } = useAppStore();
+  const { getPermiso, skus, proveedores, currentUser } = useAppStore();
   const permiso = getPermiso('carga_datos');
 
   const [tabla, setTabla] = React.useState<TablaDestino>('fact_consumo');
@@ -121,221 +122,59 @@ export function CargaDatosPage() {
     document.body.removeChild(link);
   };
 
-  // Parser y Validador de las 10 Reglas
+  // Parser y Validador de las 10 Reglas de Negocio (Engine)
   const procesarArchivo = (fileToParse: File) => {
     setLoadingValidation(true);
     setFile(fileToParse);
 
-    Papa.parse(fileToParse, {
-      header: true,
-      skipEmptyLines: true,
-      complete: (results) => {
-        const rawData = results.data as any[];
-        setParsedRows(rawData);
-        evaluar10Reglas(rawData);
-        setLoadingValidation(false);
-      },
-      error: (err) => {
-        alert(`Error al leer el archivo CSV: ${err.message}`);
-        setLoadingValidation(false);
-      },
-    });
-  };
+    const isJson = fileToParse.name.toLowerCase().endsWith('.json');
 
-  const evaluar10Reglas = (rows: any[]) => {
-    const detectedIssues: IssueCalidad[] = [];
-    const validSkuIds = new Set(skus.map((s) => s.sku_id));
-    const skuMap = new Map<string, Sku>(skus.map((s) => [s.sku_id, s]));
-    const keySet = new Set<string>();
-
-    rows.forEach((row, idx) => {
-      const filaNum = idx + 1;
-      const skuId = (row.sku_id || row.SKU || '').toString().trim();
-      const unidad = (row.unidad || '').toString().trim();
-      const fechaEmision = row.fecha_emision || '';
-      const fechaRecepcion = row.fecha_recepcion_real || '';
-      const cantidadVal = parseFloat(
-        row.cantidad || row.cantidad_solicitada || row.inventario_disponible || row.demanda_esperada || '0'
-      );
-      const cantidadRecibida = parseFloat(row.cantidad_recibida || '0');
-      const cantidadSolicitada = parseFloat(row.cantidad_solicitada || '0');
-
-      // 1. El SKU existe en el maestro (Bloqueante)
-      if (skuId && !validSkuIds.has(skuId)) {
-        detectedIssues.push({
-          issue_id: `DQ-${Date.now()}-${filaNum}-1`,
-          upload_id: 'TEMP',
-          fila: filaNum,
-          campo: 'sku_id',
-          valor: skuId,
-          regla: 'El SKU debe existir en el maestro dim_sku',
-          severidad: 'BLOQUEANTE',
-          accion: 'Fila rechazada',
-          estado: 'ABIERTO',
-        });
-      }
-
-      // 2. La unidad coincide con el maestro (Bloqueante)
-      if (skuId && validSkuIds.has(skuId) && unidad) {
-        const skuMaster = skuMap.get(skuId);
-        if (skuMaster && skuMaster.unidad.toLowerCase() !== unidad.toLowerCase()) {
-          detectedIssues.push({
-            issue_id: `DQ-${Date.now()}-${filaNum}-2`,
-            upload_id: 'TEMP',
-            fila: filaNum,
-            campo: 'unidad',
-            valor: unidad,
-            regla: `La unidad (${unidad}) no coincide con el maestro (${skuMaster.unidad})`,
-            severidad: 'BLOQUEANTE',
-            accion: 'Fila rechazada',
-            estado: 'ABIERTO',
-          });
+    if (isJson) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const text = e.target?.result as string;
+          const parsed = JSON.parse(text);
+          const rows = Array.isArray(parsed) ? parsed : parsed.data || [parsed];
+          setParsedRows(rows);
+          const valRes = validarCargaDatos(rows, skus, proveedores);
+          setIssues(valRes.issues);
+        } catch (err: any) {
+          alert(`Error al procesar el archivo JSON: ${err.message}`);
+        } finally {
+          setLoadingValidation(false);
         }
-      }
-
-      // 3. fecha_recepcion_real > fecha_emision (Bloqueante)
-      if (fechaEmision && fechaRecepcion) {
-        if (new Date(fechaRecepcion) <= new Date(fechaEmision)) {
-          detectedIssues.push({
-            issue_id: `DQ-${Date.now()}-${filaNum}-3`,
-            upload_id: 'TEMP',
-            fila: filaNum,
-            campo: 'fecha_recepcion_real',
-            valor: fechaRecepcion,
-            regla: 'fecha_recepcion_real debe ser posterior a fecha_emision',
-            severidad: 'BLOQUEANTE',
-            accion: 'Fila rechazada',
-            estado: 'ABIERTO',
-          });
-        }
-      }
-
-      // 4. Fechas dentro de rango 2020 – hoy+2 años (Bloqueante)
-      const fechaCheck = fechaEmision || fechaRecepcion || (row.periodo ? `${row.periodo}-01` : '');
-      if (fechaCheck) {
-        const year = new Date(fechaCheck).getFullYear();
-        if (isNaN(year) || year < 2020 || year > 2028) {
-          detectedIssues.push({
-            issue_id: `DQ-${Date.now()}-${filaNum}-4`,
-            upload_id: 'TEMP',
-            fila: filaNum,
-            campo: 'fecha/periodo',
-            valor: fechaCheck,
-            regla: 'Fechas fuera del rango permitido (2020 - 2028)',
-            severidad: 'BLOQUEANTE',
-            accion: 'Fila rechazada',
-            estado: 'ABIERTO',
-          });
-        }
-      }
-
-      // 5. Sin duplicados por clave natural (Bloqueante)
-      const naturalKey = `${skuId}-${row.periodo || row.orden_id || row.despacho_id || idx}`;
-      if (keySet.has(naturalKey)) {
-        detectedIssues.push({
-          issue_id: `DQ-${Date.now()}-${filaNum}-5`,
-          upload_id: 'TEMP',
-          fila: filaNum,
-          campo: 'clave_natural',
-          valor: naturalKey,
-          regla: 'Registro duplicado por clave natural en la misma carga',
-          severidad: 'BLOQUEANTE',
-          accion: 'Fila rechazada',
-          estado: 'ABIERTO',
-        });
-      } else {
-        keySet.add(naturalKey);
-      }
-
-      // 6. cantidad >= 0 (Bloqueante)
-      if (!isNaN(cantidadVal) && cantidadVal < 0) {
-        detectedIssues.push({
-          issue_id: `DQ-${Date.now()}-${filaNum}-6`,
-          upload_id: 'TEMP',
-          fila: filaNum,
-          campo: 'cantidad',
-          valor: cantidadVal.toString(),
-          regla: 'La cantidad no puede ser negativa',
-          severidad: 'BLOQUEANTE',
-          accion: 'Fila rechazada',
-          estado: 'ABIERTO',
-        });
-      }
-
-      // 7. Consumo dentro de 3σ del histórico del SKU (Advertencia)
-      if (tabla === 'fact_consumo' && cantidadVal > 3000) {
-        detectedIssues.push({
-          issue_id: `DQ-${Date.now()}-${filaNum}-7`,
-          upload_id: 'TEMP',
-          fila: filaNum,
-          campo: 'cantidad',
-          valor: cantidadVal.toString(),
-          regla: 'Consumo atípico mayor a 3 sigma del histórico del SKU',
-          severidad: 'ADVERTENCIA',
-          accion: 'Requiere confirmación de analista',
-          estado: 'ABIERTO',
-        });
-      }
-
-      // 8. cantidad_recibida <= cantidad_solicitada * 1.05 (Advertencia)
-      if (cantidadRecibida > 0 && cantidadSolicitada > 0) {
-        if (cantidadRecibida > cantidadSolicitada * 1.05) {
-          detectedIssues.push({
-            issue_id: `DQ-${Date.now()}-${filaNum}-8`,
-            upload_id: 'TEMP',
-            fila: filaNum,
-            campo: 'cantidad_recibida',
-            valor: cantidadRecibida.toString(),
-            regla: 'Exceso de entrega registrado superior al 5% de la solicitud',
-            severidad: 'ADVERTENCIA',
-            accion: 'Marcar recepción en exceso',
-            estado: 'ABIERTO',
-          });
-        }
-      }
-
-      // 9. Campaña con proyección comercial cargada (Advertencia)
-      if (tabla === 'fact_proyeccion_comercial' && !row.campania_id) {
-        detectedIssues.push({
-          issue_id: `DQ-${Date.now()}-${filaNum}-9`,
-          upload_id: 'TEMP',
-          fila: filaNum,
-          campo: 'campania_id',
-          valor: 'VACIO',
-          regla: 'Falta asociación explícita a campaña comercial',
-          severidad: 'ADVERTENCIA',
-          accion: 'Asignar campaña por defecto',
-          estado: 'ABIERTO',
-        });
-      }
-    });
-
-    // 10. Completitud mensual >= 90% (Monitoreo)
-    if (rows.length < 5) {
-      detectedIssues.push({
-        issue_id: `DQ-${Date.now()}-10`,
-        upload_id: 'TEMP',
-        fila: 0,
-        campo: 'total_filas',
-        valor: rows.length.toString(),
-        regla: 'Completitud de registros mensuales menor al 90%',
-        severidad: 'ADVERTENCIA',
-        accion: 'Verificar datos faltantes de la serie',
-        estado: 'ABIERTO',
+      };
+      reader.readAsText(fileToParse);
+    } else {
+      Papa.parse(fileToParse, {
+        header: true,
+        skipEmptyLines: true,
+        complete: (results) => {
+          const rawData = results.data as any[];
+          setParsedRows(rawData);
+          const valRes = validarCargaDatos(rawData, skus, proveedores);
+          setIssues(valRes.issues);
+          setLoadingValidation(false);
+        },
+        error: (err) => {
+          alert(`Error al leer el archivo CSV: ${err.message}`);
+          setLoadingValidation(false);
+        },
       });
     }
-
-    setIssues(detectedIssues);
   };
 
-  // Contadores
-  const filasTotales = parsedRows.length;
+  // Contadores y estado de validación
+  const valResumen = validarCargaDatos(parsedRows, skus, proveedores);
+  const filasTotales = valResumen.filasTotales;
+  const filasRechazadasCount = valResumen.filasConError;
+  const filasOkCount = valResumen.filasValidas;
+  const tieneErroresBloqueantes = valResumen.tieneErroresBloqueantes;
+  const advertenciasCount = issues.filter((i) => i.severidad === 'ADVERTENCIA').length;
   const filasBloqueantesIndices = new Set(
     issues.filter((i) => i.severidad === 'BLOQUEANTE').map((i) => i.fila)
   );
-  const filasRechazadasCount = filasBloqueantesIndices.size;
-  const filasOkCount = Math.max(0, filasTotales - filasRechazadasCount);
-  const advertenciasCount = issues.filter((i) => i.severidad === 'ADVERTENCIA').length;
 
   const handleConfirmarCarga = async () => {
     if (filasOkCount === 0) return;
@@ -616,22 +455,38 @@ export function CargaDatosPage() {
             </div>
 
             {/* Acción de Confirmar Carga */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-              <p className="text-xs text-slate-500">
-                Las filas rechazadas por reglas bloqueantes serán descartadas automáticamente del cálculo.
-              </p>
+            <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-slate-100">
+              <div>
+                {tieneErroresBloqueantes ? (
+                  <p className="text-xs font-bold text-rose-700 flex items-center gap-1.5">
+                    <XCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                    <span>
+                      Carga Bloqueada: Se encontraron errores de tipo ERROR (Bloqueantes).
+                      Debe corregir el archivo antes de confirmar.
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-xs text-slate-500">
+                    Todas las filas cumplen las reglas de calidad de información.
+                  </p>
+                )}
+              </div>
 
               <button
-                disabled={filasOkCount === 0}
+                disabled={tieneErroresBloqueantes || filasOkCount === 0}
                 onClick={handleConfirmarCarga}
-                className={`px-6 py-2.5 font-bold text-xs rounded-lg transition-colors flex items-center gap-2 cursor-pointer shadow-xs ${
-                  filasOkCount > 0
-                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                className={`px-6 py-2.5 font-bold text-xs rounded-lg transition-colors flex items-center gap-2 shadow-xs ${
+                  !tieneErroresBloqueantes && filasOkCount > 0
+                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer'
+                    : 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-300'
                 }`}
               >
                 <CheckCircle2 className="w-4 h-4" />
-                <span>Confirmar Carga ({filasOkCount} Filas Válidas)</span>
+                <span>
+                  {tieneErroresBloqueantes
+                    ? 'Confirmación Bloqueada por Errores'
+                    : `Confirmar Carga (${filasOkCount} Filas Válidas)`}
+                </span>
               </button>
             </div>
           </div>
