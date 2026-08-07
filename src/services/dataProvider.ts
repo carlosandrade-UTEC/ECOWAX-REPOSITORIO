@@ -25,6 +25,7 @@ import {
   SugerenciaParametro,
 } from '../types';
 import { mockProvider } from './mockProvider';
+import { sheetsProvider } from '../data/sheetsProvider';
 
 export interface DataProvider {
   getSkus(): Promise<Sku[]>;
@@ -50,7 +51,7 @@ export interface DataProvider {
   getAuditoria(): Promise<RegistroAuditoria[]>;
   getPermisos(): Promise<PermisosMapa>;
 
-  // Mutaciones en memoria
+  // Mutaciones
   submitDecision(decision: Omit<Decision, 'decision_id'>): Promise<Decision>;
   updateRecomendacionEstado(recoId: string, estado: Recomendacion['estado']): Promise<void>;
   closeRevision(reviewId: string): Promise<{ success: boolean; pendingDecisions?: string[] }>;
@@ -85,8 +86,10 @@ export interface DataProvider {
   updateUsuarioRol(usuarioId: string, nuevoRol: Usuario['rol']): Promise<void>;
 }
 
+const dataSource = (import.meta.env && import.meta.env.VITE_DATA_SOURCE) || 'mock';
+
 /**
  * Instancia del proveedor de datos por defecto conforme a la interfaz DataProvider.
- * Permite cambiar la implementación (Mock vs Sheets) de forma transparente.
+ * Cuando VITE_DATA_SOURCE=sheets la app usa sheetsProvider, cuando =mock usa mockProvider.
  */
-export const dataProvider: DataProvider = mockProvider;
+export const dataProvider: DataProvider = dataSource === 'sheets' ? sheetsProvider : mockProvider;
