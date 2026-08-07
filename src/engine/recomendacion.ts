@@ -47,3 +47,29 @@ export function generarRecomendacion(params: ParametrosRecomendacion): Recomenda
     estado: 'PENDIENTE',
   };
 }
+
+export interface DecisionCompraInput {
+  reco_id: string;
+  accion: 'APROBADA' | 'MODIFICADA' | 'RECHAZADA';
+  cantidad_final: number;
+  motivo_desviacion?: string;
+  usuario_id: string;
+}
+
+/**
+ * REGLA 5: Validación de decisiones sobre recomendaciones.
+ * Lanza un error de validación cuando se rechaza o modifica una recomendación sin motivo_desviacion.
+ */
+export function validarDecisionCompra(decision: Partial<DecisionCompraInput>): boolean {
+  if (!decision.accion) {
+    throw new Error('Debe especificar una acción para la decisión (APROBADA, MODIFICADA o RECHAZADA).');
+  }
+
+  if (decision.accion === 'RECHAZADA' || decision.accion === 'MODIFICADA') {
+    if (!decision.motivo_desviacion || decision.motivo_desviacion.trim() === '') {
+      throw new Error('El campo motivo_desviacion es obligatorio cuando la recomendación es RECHAZADA o MODIFICADA.');
+    }
+  }
+
+  return true;
+}
