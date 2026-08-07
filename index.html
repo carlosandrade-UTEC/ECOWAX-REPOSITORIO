@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ECOWAX Intelligence | Demanda & Abastecimiento</title>
+    <script>
+      (function() {
+        if (typeof window !== 'undefined') {
+          window.global = window;
+          try {
+            var originalFetch = window.fetch;
+            var currentFetch = typeof originalFetch === 'function' ? originalFetch.bind(window) : originalFetch;
+            Object.defineProperty(window, 'fetch', {
+              get: function() {
+                return currentFetch;
+              },
+              set: function(val) {
+                currentFetch = val;
+              },
+              configurable: true,
+              enumerable: true
+            });
+          } catch (err) {
+            console.warn('Fetch setter patch:', err);
+          }
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

@@ -1,0 +1,6 @@
+{
+  "name": "ECOWAX Demand & Supply Intelligence",
+  "description": "Sistema de inteligencia de demanda y abastecimiento de insumos críticos para ECOWAX",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

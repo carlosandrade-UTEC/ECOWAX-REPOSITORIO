@@ -1,0 +1,2 @@
+export const RULES_VERSION = "RB-2026.08";
+export const MODEL_VERSION = "DETERMINISTICO-v1";
