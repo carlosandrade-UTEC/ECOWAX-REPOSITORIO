@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppStore } from '../store/useAppStore';
 import { KpiCard } from '../components/ui/KpiCard';
 import { CriticidadBadge, AbcBadge, SemaforoBadge } from '../components/ui/Badge';
@@ -35,6 +35,8 @@ import {
 
 export function Dashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const errorAcceso = (location.state as any)?.errorAcceso;
   const {
     skus,
     alertas,
@@ -133,6 +135,16 @@ export function Dashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Alerta de Acceso Denegado si hubo redirección por permisos */}
+      {errorAcceso && (
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 font-bold text-xs flex items-center justify-between shadow-xs animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0" />
+            <span>{errorAcceso}</span>
+          </div>
+        </div>
+      )}
+
       {/* Barra de Filtros */}
       <FilterBar />
 

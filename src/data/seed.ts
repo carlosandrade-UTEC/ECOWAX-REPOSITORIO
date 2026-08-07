@@ -59,18 +59,18 @@ export const SEED_DATA_RAW = {
     ]
   },
   "usuarios": {
-    "cols": ["usuario_id", "nombre", "rol", "area"],
+    "cols": ["usuario_id", "nombre", "rol", "area", "email"],
     "rows": [
-      ["USR-001", "Rosa Quispe", "JEFE_COMPRAS", "Compras"],
-      ["USR-002", "Luis Berrocal", "ANALISTA_COMPRAS", "Compras"],
-      ["USR-003", "Marta Chavez", "GERENTE_OPERACIONES", "Operaciones"],
-      ["USR-004", "Diego Ferrer", "PLANEAMIENTO", "Operaciones"],
-      ["USR-005", "Ana Ruiz", "COMERCIAL", "Comercial"],
-      ["USR-006", "Jorge Palma", "FINANZAS", "Finanzas"],
-      ["USR-007", "Carlos Andrade", "GERENTE_GENERAL", "Gerencia"],
-      ["USR-008", "Stacy Ramos", "DATA_ANALYST", "Datos"],
-      ["USR-009", "Christian Lopez", "ADMIN", "TI"],
-      ["USR-010", "Cindy Salazar", "LECTOR", "Comercial"]
+      ["USR-001", "Rosa Quispe", "JEFE_COMPRAS", "Compras", "rosa.quispe@ecowax.com"],
+      ["USR-002", "Luis Berrocal", "ANALISTA_COMPRAS", "Compras", "luis.berrocal@ecowax.com"],
+      ["USR-003", "Marta Chavez", "GERENTE_OPERACIONES", "Operaciones", "marta.chavez@ecowax.com"],
+      ["USR-004", "Diego Ferrer", "PLANEAMIENTO", "Operaciones", "diego.ferrer@ecowax.com"],
+      ["USR-005", "Ana Ruiz", "COMERCIAL", "Comercial", "ana.ruiz@ecowax.com"],
+      ["USR-006", "Jorge Palma", "FINANZAS", "Finanzas", "jorge.palma@ecowax.com"],
+      ["USR-007", "Carlos Andrade", "GERENTE_GENERAL", "Gerencia", "carlos.andrade@utec.edu.pe"],
+      ["USR-008", "Stacy Ramos", "DATA_ANALYST", "Datos", "stacy.ramos@ecowax.com"],
+      ["USR-009", "Christian Lopez", "ADMIN", "TI", "christian.lopez@ecowax.com"],
+      ["USR-010", "Cindy Salazar", "LECTOR", "Comercial", "cindy.salazar@ecowax.com"]
     ]
   },
   "politica": {

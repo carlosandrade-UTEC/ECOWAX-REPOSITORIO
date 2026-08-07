@@ -62,6 +62,7 @@ export interface Usuario {
   nombre: string;
   rol: RolUsuario;
   area: string;
+  email?: string;
   estado?: 'ACTIVO' | 'INACTIVO';
 }
 

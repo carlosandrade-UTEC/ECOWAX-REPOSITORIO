@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { dataProvider } from '../services/dataProvider';
 import { ordenarAlertasPorCriticidad } from '../engine';
+import { SEED_DATA_RAW } from '../data/seed';
 import {
   Usuario,
   GlobalFilterState,
@@ -47,7 +48,8 @@ interface AppStoreState {
   error: string | null;
 
   // Acciones
-  setCurrentUser: (user: Usuario) => void;
+  setCurrentUser: (user: Usuario | null) => void;
+  logout: () => void;
   setFilters: (filters: Partial<GlobalFilterState>) => void;
   clearFilters: () => void;
   loadInitialData: () => Promise<void>;
@@ -58,12 +60,7 @@ interface AppStoreState {
 }
 
 export const useAppStore = create<AppStoreState>((set, get) => ({
-  currentUser: {
-    usuario_id: 'USR-001',
-    nombre: 'Rosa Quispe',
-    rol: 'JEFE_COMPRAS',
-    area: 'Compras',
-  },
+  currentUser: null,
   permisosMapa: null,
   usuarios: [],
   filters: {
@@ -85,8 +82,12 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
   loading: false,
   error: null,
 
-  setCurrentUser: (user: Usuario) => {
+  setCurrentUser: (user: Usuario | null) => {
     set({ currentUser: user });
+  },
+
+  logout: () => {
+    set({ currentUser: null });
   },
 
   setFilters: (newFilters: Partial<GlobalFilterState>) => {
@@ -184,7 +185,12 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
 
   getPermiso: (modulo: ModuloApp): PermisoNivel => {
     const { currentUser, permisosMapa } = get();
-    if (!currentUser || !permisosMapa) return 'LECTURA';
+    if (!currentUser) return 'NINGUNO';
+    if (!permisosMapa) {
+      const defaultPerms = (SEED_DATA_RAW as any).permisos;
+      const rolPermisos = defaultPerms ? defaultPerms[currentUser.rol] : null;
+      return rolPermisos ? (rolPermisos[modulo] || 'NINGUNO') : 'NINGUNO';
+    }
     const rolPermisos = permisosMapa[currentUser.rol];
     if (!rolPermisos) return 'NINGUNO';
     return rolPermisos[modulo] || 'NINGUNO';

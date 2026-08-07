@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useAppStore } from './store/useAppStore';
+import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AppShell } from './components/layout/AppShell';
 import { Login } from './pages/Login';
 import { Inicio } from './pages/Inicio';
@@ -36,45 +37,55 @@ export function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
 
-        {/* Rutas Principales dentro de AppShell */}
+        {/* Rutas Protegidas por Rol y Módulo dentro de AppShell */}
         <Route
           path="/inicio"
           element={
-            <AppShell>
-              <Inicio />
-            </AppShell>
+            <ProtectedRoute modulo="inicio">
+              <AppShell>
+                <Inicio />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/dashboard"
           element={
-            <AppShell>
-              <Dashboard />
-            </AppShell>
+            <ProtectedRoute modulo="dashboard">
+              <AppShell>
+                <Dashboard />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/kpi/:kpiKey"
           element={
-            <AppShell>
-              <DetalleKpi />
-            </AppShell>
+            <ProtectedRoute modulo="dashboard">
+              <AppShell>
+                <DetalleKpi />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/inventario"
           element={
-            <AppShell>
-              <InventarioCobertura />
-            </AppShell>
+            <ProtectedRoute modulo="inventario">
+              <AppShell>
+                <InventarioCobertura />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/pronostico"
           element={
-            <AppShell>
-              <PronosticoPage />
-            </AppShell>
+            <ProtectedRoute modulo="pronostico">
+              <AppShell>
+                <PronosticoPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
 
@@ -82,17 +93,21 @@ export function App() {
         <Route
           path="/alertas"
           element={
-            <AppShell>
-              <AlertasPage />
-            </AppShell>
+            <ProtectedRoute modulo="alertas">
+              <AppShell>
+                <AlertasPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/alertas/:id"
           element={
-            <AppShell>
-              <DetalleAlertaPage />
-            </AppShell>
+            <ProtectedRoute modulo="alertas">
+              <AppShell>
+                <DetalleAlertaPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
 
@@ -100,17 +115,21 @@ export function App() {
         <Route
           path="/recomendaciones"
           element={
-            <AppShell>
-              <RecomendacionesPage />
-            </AppShell>
+            <ProtectedRoute modulo="recomendaciones">
+              <AppShell>
+                <RecomendacionesPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/recomendaciones/:id"
           element={
-            <AppShell>
-              <DetalleRecomendacionPage />
-            </AppShell>
+            <ProtectedRoute modulo="recomendaciones">
+              <AppShell>
+                <DetalleRecomendacionPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
 
@@ -118,9 +137,11 @@ export function App() {
         <Route
           path="/decisiones"
           element={
-            <AppShell>
-              <HistorialDecisionesPage />
-            </AppShell>
+            <ProtectedRoute modulo="decisiones">
+              <AppShell>
+                <HistorialDecisionesPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
 
@@ -128,25 +149,31 @@ export function App() {
         <Route
           path="/revision"
           element={
-            <AppShell>
-              <RevisionMensualPage />
-            </AppShell>
+            <ProtectedRoute modulo="revision_mensual">
+              <AppShell>
+                <RevisionMensualPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/revision-mensual"
           element={
-            <AppShell>
-              <RevisionMensualPage />
-            </AppShell>
+            <ProtectedRoute modulo="revision_mensual">
+              <AppShell>
+                <RevisionMensualPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/revision/:id/acta"
           element={
-            <AppShell>
-              <ActaRevisionPage />
-            </AppShell>
+            <ProtectedRoute modulo="revision_mensual">
+              <AppShell>
+                <ActaRevisionPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
 
@@ -154,25 +181,31 @@ export function App() {
         <Route
           path="/carga"
           element={
-            <AppShell>
-              <CargaDatosPage />
-            </AppShell>
+            <ProtectedRoute modulo="carga_datos">
+              <AppShell>
+                <CargaDatosPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/carga-datos"
           element={
-            <AppShell>
-              <CargaDatosPage />
-            </AppShell>
+            <ProtectedRoute modulo="carga_datos">
+              <AppShell>
+                <CargaDatosPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/carga/:id"
           element={
-            <AppShell>
-              <ResultadoCargaPage />
-            </AppShell>
+            <ProtectedRoute modulo="carga_datos">
+              <AppShell>
+                <ResultadoCargaPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
 
@@ -180,17 +213,21 @@ export function App() {
         <Route
           path="/maestros/sku"
           element={
-            <AppShell>
-              <MaestroSkusPage />
-            </AppShell>
+            <ProtectedRoute modulo="maestros">
+              <AppShell>
+                <MaestroSkusPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
         <Route
           path="/maestros/proveedores"
           element={
-            <AppShell>
-              <MaestroProveedoresPage />
-            </AppShell>
+            <ProtectedRoute modulo="maestros">
+              <AppShell>
+                <MaestroProveedoresPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
         <Route path="/maestros" element={<Navigate to="/maestros/sku" replace />} />
@@ -199,9 +236,11 @@ export function App() {
         <Route
           path="/parametros"
           element={
-            <AppShell>
-              <ParametrosPage />
-            </AppShell>
+            <ProtectedRoute modulo="parametros">
+              <AppShell>
+                <ParametrosPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
 
@@ -209,9 +248,11 @@ export function App() {
         <Route
           path="/auditoria"
           element={
-            <AppShell>
-              <AuditoríaPage />
-            </AppShell>
+            <ProtectedRoute modulo="auditoria">
+              <AppShell>
+                <AuditoríaPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
 
@@ -219,9 +260,11 @@ export function App() {
         <Route
           path="/usuarios"
           element={
-            <AppShell>
-              <UsuariosPage />
-            </AppShell>
+            <ProtectedRoute modulo="usuarios">
+              <AppShell>
+                <UsuariosPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
 
@@ -229,9 +272,11 @@ export function App() {
         <Route
           path="/ayuda"
           element={
-            <AppShell>
-              <AyudaPage />
-            </AppShell>
+            <ProtectedRoute modulo="inicio">
+              <AppShell>
+                <AyudaPage />
+              </AppShell>
+            </ProtectedRoute>
           }
         />
 
