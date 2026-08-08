@@ -137,7 +137,7 @@ export function RecomendacionesPage() {
 
                 <button
                   onClick={() => navigate(`/recomendaciones/${rec.reco_id}`)}
-                  className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-extrabold rounded-xl shadow-2xs transition-colors flex items-center space-x-1.5 text-xs"
+                  className="w-full sm:w-auto min-h-[44px] px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold rounded-xl shadow-2xs transition-colors flex items-center justify-center space-x-1.5 text-xs cursor-pointer"
                 >
                   <span>Defender Recomendación & Simulador</span>
                   <ArrowRight className="w-3.5 h-3.5" />

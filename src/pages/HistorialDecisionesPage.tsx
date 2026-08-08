@@ -190,8 +190,73 @@ export function HistorialDecisionesPage() {
         </div>
       </div>
 
-      {/* TABLA PRINCIPAL DE DECISIONES */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+      {/* VISTA MÓVIL EN TARJETAS PARA CELULARES (< 640px) */}
+      <div className="block sm:hidden space-y-3">
+        {decisionesFiltradas.map((dec) => {
+          const skuInfo = skus.find((s) => s.sku_id === dec.sku_id);
+          const usuarioInfo = usuarios.find((u) => u.usuario_id === dec.usuario_id) || {
+            nombre: dec.usuario_id,
+            rol: 'JEFATURA_LOGISTICA',
+          };
+          const desvPctNum = dec.desviacion_pct * 100;
+
+          return (
+            <div key={dec.decision_id} className="bg-white p-4 rounded-xl border border-slate-200 shadow-2xs space-y-3">
+              <div className="flex items-start justify-between border-b border-slate-100 pb-2">
+                <div>
+                  <span className="text-[10px] font-bold text-slate-400 font-mono block">Periodo {dec.periodo}</span>
+                  <div className="font-extrabold text-sm text-slate-900 font-mono">{dec.sku_id}</div>
+                  <p className="text-[11px] text-slate-500 font-sans truncate">{skuInfo?.nombre}</p>
+                </div>
+                <span
+                  className={`inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border ${
+                    dec.accion === 'APROBADA' || (dec.accion as string) === 'APROBADO'
+                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                      : dec.accion === 'MODIFICADA'
+                      ? 'bg-amber-50 text-amber-800 border-amber-200'
+                      : 'bg-rose-50 text-rose-800 border-rose-200'
+                  }`}
+                >
+                  {dec.accion}
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                <div>
+                  <span className="text-[10px] text-slate-400 block font-sans">Cant. Recomendada:</span>
+                  <span className="font-bold text-slate-700">{formatoNumero(dec.cantidad_recomendada, 0)} {skuInfo?.unidad || 'kg'}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block font-sans">Cant. Final:</span>
+                  <span className="font-black text-emerald-700">{formatoNumero(dec.cantidad_final, 0)} {skuInfo?.unidad || 'kg'}</span>
+                </div>
+              </div>
+
+              <div className="text-xs space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500 font-medium">Desviación:</span>
+                  <span className={`font-mono font-bold ${desvPctNum === 0 ? 'text-slate-400' : desvPctNum < 0 ? 'text-rose-600' : 'text-amber-600'}`}>
+                    {desvPctNum === 0 ? '0.0%' : desvPctNum > 0 ? `+${desvPctNum.toFixed(1)}%` : `${desvPctNum.toFixed(1)}%`}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-500 font-medium">Usuario / Rol:</span>
+                  <span className="font-bold text-slate-800">{usuarioInfo.nombre}</span>
+                </div>
+              </div>
+
+              {(dec.motivo_desviacion || dec.comentario) && (
+                <div className="p-2 bg-slate-50 border border-slate-100 rounded text-[11px] text-slate-700 italic font-sans">
+                  "{dec.motivo_desviacion || dec.comentario}"
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* TABLA PRINCIPAL DE DECISIONES PARA PANTALLAS MEDIANAS/GRANDES (>= 640px) */}
+      <div className="hidden sm:block bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>

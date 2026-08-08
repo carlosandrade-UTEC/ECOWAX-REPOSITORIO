@@ -212,8 +212,75 @@ export function AlertasPage() {
         </div>
       </div>
 
-      {/* Tabla Principal de Alertas */}
-      <div className="bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
+      {/* VISTA MÓVIL EN TARJETAS (CARDS) PARA CELULARES (< 640px) */}
+      <div className="block sm:hidden space-y-3">
+        {alertasOrdenadas.map((alerta) => {
+          const { estadoEfectivo, diasRetraso } = evaluarEstadoAlerta(alerta);
+          const isVencida = estadoEfectivo === 'VENCIDA';
+
+          return (
+            <div
+              key={alerta.alerta_id}
+              className={`bg-white p-4 rounded-xl border shadow-2xs space-y-3 ${
+                isVencida ? 'border-rose-300 bg-rose-50/20' : 'border-slate-200'
+              }`}
+            >
+              <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-2">
+                <div>
+                  <div className="font-extrabold text-sm text-slate-900 font-mono">{alerta.sku_id}</div>
+                  <div className="text-[10px] text-slate-400 font-mono">{alerta.alerta_id}</div>
+                </div>
+                <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                  <AbcBadge clase={alerta.clase_abc} />
+                  <CriticidadBadge criticidad={alerta.criticidad} />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-slate-500">Estado Alerta:</span>
+                {renderEstadoBadge(estadoEfectivo, diasRetraso)}
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 text-xs font-mono bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                <div>
+                  <span className="text-[10px] text-slate-400 block font-sans">Stock Actual:</span>
+                  <span className="font-bold text-slate-900">{formatoNumero(alerta.inventario_actual, 0)} {alerta.unidad}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block font-sans">Punto Reorden:</span>
+                  <span className="font-bold text-amber-800">{formatoNumero(alerta.punto_reorden, 0)} {alerta.unidad}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block font-sans">Cobertura Actual:</span>
+                  <span className="font-bold text-rose-700">{alerta.cobertura_actual_dias} días</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-slate-400 block font-sans">Cant. Sugerida:</span>
+                  <span className="font-extrabold text-emerald-700">{formatoNumero(alerta.cantidad_sugerida, 0)} {alerta.unidad}</span>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between text-xs pt-1">
+                <span className="text-slate-500 font-medium">Fecha Límite:</span>
+                <span className={`font-mono font-bold ${isVencida ? 'text-rose-700' : 'text-slate-900'}`}>
+                  {formatoFechaISOAFormatoPeruano(alerta.fecha_limite_emision)}
+                </span>
+              </div>
+
+              <button
+                onClick={() => navigate(`/alertas/${alerta.alerta_id}`)}
+                className="w-full min-h-[44px] bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-colors flex items-center justify-center space-x-1.5 shadow-2xs cursor-pointer"
+              >
+                <span>Ver Detalle de Alerta</span>
+                <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* VISTA EN TABLA PARA PANTALLAS MEDIANAS Y GRANDES (>= 640px) */}
+      <div className="hidden sm:block bg-white rounded-xl border border-slate-200 shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
@@ -291,7 +358,7 @@ export function AlertasPage() {
                     <td className="py-3.5 px-4 text-center">
                       <button
                         onClick={() => navigate(`/alertas/${alerta.alerta_id}`)}
-                        className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-[11px] rounded-lg transition-colors flex items-center space-x-1 mx-auto shadow-2xs"
+                        className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold text-[11px] rounded-lg transition-colors flex items-center space-x-1 mx-auto shadow-2xs cursor-pointer"
                       >
                         <span>Detalle</span>
                         <ArrowRight className="w-3 h-3" />

@@ -22,7 +22,7 @@ export function FilterBar() {
         <select
           value={filters.zonaId || ''}
           onChange={(e) => setFilters({ zonaId: e.target.value || undefined })}
-          className="w-full sm:w-auto bg-slate-50 hover:bg-slate-100/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#15803D] transition-all"
+          className="w-full sm:w-auto bg-slate-50 hover:bg-slate-100/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2.5 min-h-[44px] font-medium focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#15803D] transition-all"
         >
           <option value="">Todas las Zonas</option>
           {zonas.map((z) => (

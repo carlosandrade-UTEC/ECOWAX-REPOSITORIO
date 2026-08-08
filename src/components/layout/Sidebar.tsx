@@ -147,7 +147,7 @@ export function Sidebar() {
                           to={item.path}
                           onClick={closeMobileMenu}
                           className={({ isActive }) =>
-                            `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                            `flex items-center justify-between px-3.5 py-3 min-h-[44px] rounded-xl text-xs font-medium transition-all ${
                               isActive
                                 ? 'bg-[#15803D] text-white font-bold shadow-sm'
                                 : 'text-green-100 hover:bg-green-700/60 hover:text-white'
