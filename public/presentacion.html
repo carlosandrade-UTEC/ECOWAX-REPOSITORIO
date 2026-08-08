@@ -1013,7 +1013,7 @@
                                 <li>Tensioactivo limpieza <span style="float: right; color: var(--alert); font-weight: bold;">Reponer · 21 d</span></li>
                                 <li>Emulsificante E-471 <span style="float: right; color: var(--positive); font-weight: bold;">OK · 84 d</span></li>
                             </ul>
-                            <div style="margin-top: auto; padding: 16px; background: rgba(46, 125, 50, 0.1); border-left: 4px solid var(--accent);">
+<div style="margin-top: auto; padding: 16px; background: rgba(46, 125, 50, 0.1); border-left: 4px solid var(--accent);">
                                 <h4 style="color: var(--accent); margin-bottom: 12px; font-size: 18px;">Decisión sugerida</h4>
                                 <ul style="font-size: 16px; margin: 0;">
                                     <li style="margin-bottom: 4px; padding-left: 16px;">Emitir OC Carnauba por 4,2t antes del 18/03.</li>
@@ -1028,30 +1028,84 @@
             </div>
         </div>
 
-        <!-- Slide 19 -->
-        <div class="slide show-alert" data-notes="Producto 2: Technical Excellence Cockpit. Jefatura Técnica lo usa para prevenir reclamos. Usaremos regresión logística o árbol de decisión interpretable. Y el Insight 2 es brutal: los reclamos no se reparten por lote de producto, se concentran en 4 clientes. 70% de reclamos vienen de 4 packings.">
+        <!-- Slide 19a -->
+        <div class="slide" data-notes="Producto 2: Technical Excellence Cockpit. Jefatura Técnica lo usa para prevenir reclamos. Usaremos regresión logística o árbol de decisión interpretable. Y el Insight 2 es brutal: los reclamos no se reparten por lote de producto, se concentran en 4 clientes. 70% de reclamos vienen de 4 packings.">
             <div class="tag-demo">Cifras ilustrativas construidas para demostrar la lógica de decisión</div>
-            <h2>Producto 2: Technical Excellence Cockpit + Insight 2</h2>
+            <h2>Producto 2 — decide qué cliente y qué técnico, antes de la visita</h2>
             
-            <div class="evidence flex-row">
-                <div class="col-half" style="font-size: 22px; display: flex; flex-direction: column; gap: 20px;">
-                    <div style="border-left: 4px solid var(--accent); padding-left: 16px;"><strong>Usuario:</strong> Jefatura Técnica.</div>
-                    <div style="border-left: 4px solid var(--accent); padding-left: 16px;"><strong>Decisión:</strong> Qué cliente recibe protocolo y qué técnico atiende.</div>
-                    <div style="border-left: 4px solid var(--accent); padding-left: 16px;"><strong>Modelo:</strong> Regresión logística o árbol interpretable (score riesgo).</div>
-                    <div style="border-left: 4px solid var(--accent); padding-left: 16px; margin-bottom: 20px;"><strong>KPI:</strong> Reclamos de 4,4 a 3,1 por 1000t (-30%).</div>
+            <div class="evidence flex-row" style="margin-bottom: 12px; gap: 32px;">
+                <div class="col-half" style="font-size: 22px; display: flex; flex-direction: column; gap: 16px;">
+                    <div style="border-left: 4px solid var(--accent); padding-left: 16px;">
+                        <span style="background: var(--accent); color: white; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-right: 8px;">1</span>
+                        <strong>Usuario y decisión:</strong> Jefatura Técnica decide qué cliente recibe protocolo reforzado y qué técnico atiende cada visita.
+                    </div>
+                    <div style="border-left: 4px solid var(--accent); padding-left: 16px;">
+                        <span style="background: var(--accent); color: white; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-right: 8px;">2</span>
+                        <strong>Modelo:</strong> Regresión logística o árbol interpretable. Se eligió sobre modelos más potentes a propósito: el score se usa para conversar con un técnico, y un score que no explica por qué marcó riesgo alto no cambia ninguna conducta.
+                    </div>
+                    <div style="border-left: 4px solid var(--accent); padding-left: 16px;">
+                        <span style="background: var(--accent); color: white; border-radius: 50%; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: bold; margin-right: 8px;">3</span>
+                        <strong>KPI:</strong> Reclamos de 4,4 a 3,1 por 1.000 t (−30 %).
+                    </div>
+                </div>
+                <div class="col-half" style="display: flex; flex-direction: column; justify-content: center;">
+                    <table class="data-table" style="font-size: 22px; width: 100%;">
+                        <tr><th>Objetivo</th><th>Indicador</th><th>Base</th><th style="text-align: right;">Meta</th></tr>
+                        <tr><td>Calidad de aplicación</td><td>Reclamos de cliente</td><td class="data">4,4 / 1kt</td><td class="data positive-text" style="text-align: right;">≤ 3,1 / 1kt</td></tr>
+                        <tr><td>Trazabilidad técnica</td><td>Visitas con protocolo digital</td><td class="data">0 %</td><td class="data positive-text" style="text-align: right;">≥ 95 %</td></tr>
+                        <tr><td>Efectividad preventiva</td><td>FTFR (First Time Fix Rate)</td><td class="data">55 %</td><td class="data positive-text" style="text-align: right;">≥ 75 %</td></tr>
+                    </table>
                     
-                    <div style="background: var(--surface); border: 1px solid rgba(147,168,156,0.4); padding: 16px; border-radius: 4px;">
-                        <div style="font-family: var(--font-mono); font-size: 16px; color: var(--text-med); margin-bottom: 8px;">POR QUÉ ES CLAVE</div>
-                        <div style="font-size: 18px; color: var(--text-high); line-height: 1.4; margin-bottom: 16px;">Invierte la conclusión que la empresa venía sacando. Si los reclamos se leen como falla de producto, la respuesta es reformular la fórmula — un proyecto de meses con riesgo regulatorio. Si nacen en la aplicación, intervenir cuatro packings es un plan de semanas.</div>
-                        <div style="font-family: var(--font-mono); font-size: 16px; color: var(--text-med); margin-bottom: 8px;">DECISIÓN QUE HABILITA</div>
-                        <div style="font-size: 18px; color: var(--accent); line-height: 1.4; font-weight: 500;">Priorizar protocolo reforzado, calibración de equipo y capacitación de operarios en esos cuatro clientes antes del inicio de la próxima campaña.</div>
+                    <div style="margin-top: 24px; background: rgba(63, 191, 127, 0.08); border: 1px solid var(--positive); padding: 16px; border-radius: 8px; display: flex; align-items: center; gap: 16px;">
+                        <div style="font-size: 40px; font-weight: bold; color: var(--accent); font-family: var(--font-mono); line-height: 1;">-30%</div>
+                        <div style="font-size: 18px; color: var(--text-high); line-height: 1.3;">
+                            <strong>Reducción proyectada de reclamos:</strong> Evita notas de crédito, reprocesos logísticos y la pérdida de confianza de agroexportadores top.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="so-what">"El cockpit no busca automatizar la visita técnica. Busca que el técnico más calificado llegue a la planta con el diagnóstico pre-calculado, antes de que se encienda la alarma."</p>
+            <div class="signature-chart"><div class="signature-line"><div class="signature-dot"></div></div></div>
+        </div>
+
+        <!-- Slide 19b -->
+        <div class="slide" data-notes="70% de los reclamos vienen de solo 4 clientes. No es un defecto en la formulación de la cera, sino desviaciones recurrentes de temperatura y velocidad en los rodillos de sus packings. Intervenir 4 packings toma semanas; reformular la cera tomaría meses.">
+            <div class="tag-demo">Cifras ilustrativas construidas para demostrar la lógica de decisión</div>
+            <h2>70 % de los reclamos vienen de 4 clientes — no del producto</h2>
+            
+            <div class="evidence flex-row" style="gap: 32px;">
+                <div class="col-half" style="background: var(--surface); border: 1px solid rgba(147,168,156,0.4); padding: 24px; border-radius: 8px; display: flex; flex-direction: column; gap: 20px;">
+                    <div>
+                        <div style="font-family: var(--font-mono); font-size: 14px; color: var(--accent); font-weight: bold; letter-spacing: 1px; margin-bottom: 6px; text-transform: uppercase;">HALLAZGO</div>
+                        <p style="font-size: 18px; color: var(--text-high); margin: 0; line-height: 1.4;">
+                            Cuatro clientes concentran el 70 % de los reclamos registrados en doce meses, y esos reclamos no coinciden con lotes de producto específicos sino con desviaciones recurrentes de temperatura y velocidad de rodillos en sus propias plantas.
+                        </p>
+                    </div>
+                    <div>
+                        <div style="font-family: var(--font-mono); font-size: 14px; color: var(--alert); font-weight: bold; letter-spacing: 1px; margin-bottom: 6px; text-transform: uppercase;">POR QUÉ ES CLAVE</div>
+                        <p style="font-size: 18px; color: var(--text-high); margin: 0; line-height: 1.4;">
+                            Invierte la conclusión que la empresa venía sacando. Si se lee como falla de producto, la respuesta es reformular la fórmula — un proyecto de meses con riesgo regulatorio. Si nace en la aplicación, intervenir cuatro packings es un plan de semanas.
+                        </p>
+                    </div>
+                    <div>
+                        <div style="font-family: var(--font-mono); font-size: 14px; color: var(--accent); font-weight: bold; letter-spacing: 1px; margin-bottom: 6px; text-transform: uppercase;">DECISIÓN QUE HABILITA</div>
+                        <p style="font-size: 18px; color: var(--accent); font-weight: 500; margin: 0; line-height: 1.4;">
+                            Priorizar protocolo reforzado, calibración de equipo y capacitación de operarios en esos cuatro clientes antes del inicio de la próxima campaña.
+                        </p>
                     </div>
                 </div>
                 <div class="col-half">
-                    <div style="font-family: var(--font-mono); font-size: 14px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">→ Hallazgo derivado de este producto</div>
-                    <h3 style="font-size: 24px; color: var(--text-high); margin-top: 0;">Insight 2: Pareto de reclamos</h3>
-                    <div class="chart-container" style="height: 350px;">
+                    <div style="font-family: var(--font-mono); font-size: 14px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">→ Distribución Pareto de Reclamos</div>
+                    <div style="position: relative; height: 350px;">
                         <canvas id="paretoChart"></canvas>
+                        <!-- Annotations on top of Pareto chart -->
+                        <div style="position: absolute; top: 12px; left: 12%; color: var(--alert); font-family: var(--font-mono); font-size: 15px; font-weight: bold; background: white; padding: 4px 10px; border: 1px solid var(--alert); border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); pointer-events: none;">
+                            estos 4 → plan de semanas
+                        </div>
+                        <div style="position: absolute; bottom: 80px; right: 12%; color: var(--text-med); font-family: var(--font-mono); font-size: 15px; font-weight: bold; background: white; padding: 4px 10px; border: 1px solid rgba(147,168,156,0.4); border-radius: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); pointer-events: none;">
+                            el resto → no es prioridad
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1063,50 +1117,86 @@
         <!-- Slide 20 -->
         <div class="slide" data-notes="Maqueta del Cockpit. Tenemos la carta de control estadístico (SPC) de temperatura de túnel, un score de riesgo por cliente, y abajo un grid 5W+2H de acciones automáticas sugeridas. El técnico sabe a qué packing ir preparado.">
             <div class="tag-demo">Cifras ilustrativas construidas para demostrar la lógica de decisión</div>
-            <h2>Maqueta del tablero Technical Excellence Cockpit</h2>
+            <h2>El tablero avisa antes de la visita, no después del reclamo</h2>
             
             <div class="evidence">
                 <div class="maqueta" style="height: auto;">
-                    <div class="maqueta-header">
-                        <div class="kpi-box"><div class="kpi-val">3.1</div><div class="kpi-lbl">Reclamos/1kt</div></div>
-                        <div class="kpi-box"><div class="kpi-val">83 %</div><div class="kpi-lbl">Cumplimiento</div></div>
-                        <div class="kpi-box"><div class="kpi-val alert">71 %</div><div class="kpi-lbl">FTFR</div></div>
-                        <div class="kpi-box" style="display: flex; flex-direction: column; justify-content: center;">
-                            <div class="kpi-val alert" style="font-size: 40px;">65 % <span style="font-size: 20px; color: var(--text-med); font-family: var(--font-body); font-weight: normal;">· Piura E</span></div>
-                            <div class="kpi-lbl">Cump. Packing (Mín)</div>
-                            <div style="font-size: 12px; color: var(--text-med); margin-top: 8px; font-family: var(--font-mono);">
-                                Piura A 96% | Chincha D 91% | Huaral B 88% | <span style="color: var(--alert);">Ica C 74%</span>
+                    <!-- KPI Header -->
+                    <div class="maqueta-header" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px;">
+                        <div class="kpi-box" style="text-align: center; background: white; border: 1px solid var(--text-med); padding: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                            <div class="kpi-val" style="font-size: 32px; font-weight: bold; color: var(--text-high); font-family: var(--font-mono);">3,1</div>
+                            <div class="kpi-lbl" style="font-size: 14px; color: var(--text-med);">Reclamos/1kt</div>
+                            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--text-med); margin-top: 4px;">meta ≤ 3,1</div>
+                        </div>
+                        <div class="kpi-box" style="text-align: center; background: white; border: 1px solid var(--text-med); padding: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                            <div class="kpi-val" style="font-size: 32px; font-weight: bold; color: var(--alert); font-family: var(--font-mono);">83 %</div>
+                            <div class="kpi-lbl" style="font-size: 14px; color: var(--text-med);">Cumplimiento</div>
+                            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--text-med); margin-top: 4px;">meta ≥ 95 %</div>
+                        </div>
+                        <div class="kpi-box" style="text-align: center; background: white; border: 1px solid var(--text-med); padding: 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                            <div class="kpi-val" style="font-size: 32px; font-weight: bold; color: var(--alert); font-family: var(--font-mono);">71 %</div>
+                            <div class="kpi-lbl" style="font-size: 14px; color: var(--text-med);">FTFR</div>
+                            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: var(--text-med); margin-top: 4px;">meta ≥ 75 %</div>
+                        </div>
+                        <div class="kpi-box" style="text-align: center; background: white; border: 1px solid var(--text-med); padding: 12px; border-radius: 8px; display: flex; flex-direction: column; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.02);">
+                            <div class="kpi-val" style="font-size: 32px; font-weight: bold; color: var(--alert); font-family: var(--font-mono);">65 %</div>
+                            <div class="kpi-lbl" style="font-size: 13px; color: var(--text-med); font-weight: bold;">Piura E — el más bajo</div>
+                            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-med); margin-top: 4px; line-height: 1.2;">
+                                Piura A 96% | Chincha D 91%<br>Huaral B 88% | <span style="color: var(--alert); font-weight: bold;">Ica C 74%</span>
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Charts Area -->
                     <div style="display: flex; padding: 24px; gap: 24px; background: var(--surface);">
-                        <div style="flex: 2; border: 1px solid var(--text-med); padding: 16px; background: white; border-radius: 8px;">
-                            <h4 style="color: var(--text-med); margin-bottom: 16px; font-size: 20px;">Carta de Control SPC - Temp. Túnel (°C)</h4>
+                        <div style="flex: 2; border: 1px solid var(--text-med); padding: 16px; background: white; border-radius: 8px; position: relative;">
+                            <h4 style="color: var(--text-med); margin-bottom: 16px; font-size: 20px; margin-top: 0;">Carta de Control SPC - Temp. Túnel (°C)</h4>
                             <div style="height: 180px; width: 100%; position: relative;">
                                 <canvas id="spcChart" style="width: 100%; height: 100%;"></canvas>
+                                <!-- Annotations for out of bounds points -->
+                                <div style="position: absolute; top: 12px; left: 32%; color: var(--alert); font-family: var(--font-mono); font-size: 11px; font-weight: bold; background: rgba(255,255,255,0.92); padding: 2px 8px; border: 1px solid var(--alert); border-radius: 4px; pointer-events: none; box-shadow: 0 2px 8px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 4px;">
+                                    <span style="display: inline-block; width: 6px; height: 6px; background: var(--alert); border-radius: 50%;"></span>
+                                    fuera de rango → recalbirar equipo
+                                </div>
                             </div>
                         </div>
                         <div style="flex: 1; border: 1px solid var(--text-med); padding: 16px; background: white; border-radius: 8px;">
-                            <h4 style="color: var(--text-med); margin-bottom: 16px; font-size: 20px;">Score de Riesgo</h4>
-                            <ul style="font-size: 18px; display: flex; flex-direction: column; gap: 12px;">
-                                <li style="margin-bottom: 0;">Ica C · cítricos <span class="data" style="float: right; color: var(--alert); font-weight: bold;">0.81</span>
-                                    <div style="width: 100%; height: 4px; background: rgba(147,168,156,0.2); margin-top: 4px;"><div style="height: 100%; width: 81%; background: var(--alert);"></div></div>
+                            <h4 style="color: var(--text-med); margin-bottom: 12px; font-size: 20px; margin-top: 0; display: flex; justify-content: space-between; align-items: center;">
+                                <span>Score de Riesgo</span>
+                                <span style="font-family: var(--font-mono); font-size: 11px; color: var(--alert); font-weight: bold; border: 1px dashed var(--alert); padding: 2px 6px; border-radius: 4px;">umbral ≥ 0.60</span>
+                            </h4>
+                            <ul style="font-size: 18px; display: flex; flex-direction: column; gap: 12px; padding: 0; margin: 0; list-style: none;">
+                                <li style="margin-bottom: 0;">Ica C · cítricos <span class="data" style="float: right; color: var(--alert); font-weight: bold; font-family: var(--font-mono);">0.81</span>
+                                    <div style="width: 100%; height: 8px; background: rgba(147,168,156,0.15); margin-top: 4px; position: relative; border-radius: 4px;">
+                                        <div style="height: 100%; width: 81%; background: var(--alert); border-radius: 4px;"></div>
+                                        <div style="position: absolute; top: -6px; bottom: -6px; left: 60%; width: 1px; border-left: 1.5px dashed var(--alert); z-index: 5;" title="Límite de riesgo"></div>
+                                    </div>
                                 </li>
-                                <li style="margin-bottom: 0;">Piura E · mango <span class="data" style="float: right; color: var(--alert); font-weight: bold;">0.74</span>
-                                    <div style="width: 100%; height: 4px; background: rgba(147,168,156,0.2); margin-top: 4px;"><div style="height: 100%; width: 74%; background: var(--alert);"></div></div>
+                                <li style="margin-bottom: 0;">Piura E · mango <span class="data" style="float: right; color: var(--alert); font-weight: bold; font-family: var(--font-mono);">0.74</span>
+                                    <div style="width: 100%; height: 8px; background: rgba(147,168,156,0.15); margin-top: 4px; position: relative; border-radius: 4px;">
+                                        <div style="height: 100%; width: 74%; background: var(--alert); border-radius: 4px;"></div>
+                                        <div style="position: absolute; top: -6px; bottom: -6px; left: 60%; width: 1px; border-left: 1.5px dashed var(--alert); z-index: 5;" title="Límite de riesgo"></div>
+                                    </div>
                                 </li>
-                                <li style="margin-bottom: 0;">Huaral B · palta <span class="data" style="float: right; color: var(--text-med); font-weight: bold;">0.52</span>
-                                    <div style="width: 100%; height: 4px; background: rgba(147,168,156,0.2); margin-top: 4px;"><div style="height: 100%; width: 52%; background: var(--text-med);"></div></div>
+                                <li style="margin-bottom: 0;">Huaral B · palta <span class="data" style="float: right; color: var(--text-med); font-weight: bold; font-family: var(--font-mono);">0.52</span>
+                                    <div style="width: 100%; height: 8px; background: rgba(147,168,156,0.15); margin-top: 4px; position: relative; border-radius: 4px;">
+                                        <div style="height: 100%; width: 52%; background: var(--text-med); border-radius: 4px;"></div>
+                                        <div style="position: absolute; top: -6px; bottom: -6px; left: 60%; width: 1px; border-left: 1.5px dashed var(--alert); z-index: 5;" title="Límite de riesgo"></div>
+                                    </div>
                                 </li>
-                                <li style="margin-bottom: 0;">Chincha D · mango <span class="data" style="float: right; color: var(--positive); font-weight: bold;">0.19</span>
-                                    <div style="width: 100%; height: 4px; background: rgba(147,168,156,0.2); margin-top: 4px;"><div style="height: 100%; width: 19%; background: var(--positive);"></div></div>
+                                <li style="margin-bottom: 0;">Chincha D · mango <span class="data" style="float: right; color: var(--positive); font-weight: bold; font-family: var(--font-mono);">0.19</span>
+                                    <div style="width: 100%; height: 8px; background: rgba(147,168,156,0.15); margin-top: 4px; position: relative; border-radius: 4px;">
+                                        <div style="height: 100%; width: 19%; background: var(--positive); border-radius: 4px;"></div>
+                                        <div style="position: absolute; top: -6px; bottom: -6px; left: 60%; width: 1px; border-left: 1.5px dashed var(--alert); z-index: 5;" title="Límite de riesgo"></div>
+                                    </div>
                                 </li>
                             </ul>
                         </div>
                     </div>
+                    
                     <!-- 5W+2H Action Footer -->
                     <div style="padding: 16px 24px; background: white; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--text-med);">
-                        <div style="font-family: var(--font-mono); font-size: 14px; color: var(--text-med); font-weight: bold;">EJEMPLO · ACCIÓN DISPARADA POR EL SCORE</div>
+                        <div style="font-family: var(--font-mono); font-size: 14px; color: var(--text-med); font-weight: bold;">EJEMPLO · CÓMO EL SCORE DISPARA UNA ACCIÓN</div>
                         <div style="display: flex; gap: 12px; font-size: 14px;">
                             <div style="flex: 1; display: flex; flex-direction: column;"><strong>What (Qué)</strong><span>Auditoría Ica C</span></div>
                             <div style="flex: 1; display: flex; flex-direction: column;"><strong>Why (Por qué)</strong><span>Score riesgo 0.81</span></div>
@@ -1119,6 +1209,9 @@
                     </div>
                 </div>
             </div>
+            
+            <p class="so-what">"El tablero no muestra qué pasó. Dice qué visita conviene reforzar esta semana, antes de que el reclamo ocurra."</p>
+            <div class="signature-chart"><div class="signature-line"><div class="signature-dot"></div></div></div>
         </div>
 
         <!-- Slide 21 -->
