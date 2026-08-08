@@ -262,6 +262,18 @@ export function Login() {
           </p>
         </div>
       </div>
+      
+      <div className="mt-8">
+        <a
+          href="/presentacion.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-6 py-3 rounded-xl border border-slate-700 transition-colors shadow-sm text-sm font-medium"
+        >
+          <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+          <span>Ver Presentación Ejecutiva</span>
+        </a>
+      </div>
     </div>
   );
 }
