@@ -18,6 +18,7 @@ import {
   Users,
   HelpCircle,
   X,
+  QrCode,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -168,7 +169,17 @@ export function Sidebar() {
           })}
         </div>
 
-        <div className="p-4 mt-auto">
+        <div className="p-4 mt-auto space-y-3">
+          <a
+            href="/presentacion.html#/16"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center space-x-2 w-full py-2.5 px-4 bg-[#15803D] hover:bg-green-700 text-white font-bold text-xs rounded-xl shadow-md border border-green-600/30 transition-all hover:scale-[1.02] cursor-pointer"
+          >
+            <QrCode className="w-4 h-4 text-emerald-100" />
+            <span>Volver a Presentación (QR)</span>
+          </a>
+
           <div className="bg-[#14532D] rounded-2xl p-4 text-white space-y-2.5 shadow-sm border border-green-800">
             <div className="flex items-center justify-between">
               <span className="text-[10px] text-green-200 font-semibold uppercase tracking-wider">Reglas de Negocio</span>
