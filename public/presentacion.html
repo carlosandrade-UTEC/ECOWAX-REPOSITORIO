@@ -324,36 +324,6 @@
             <div class="signature-chart"><div class="signature-line"><div class="signature-dot" style="display: block; top: -40px;"></div></div></div>
         </div>
 
-        <!-- Slide 2 -->
-        <div class="slide" data-notes="[Continúa apertura] Esta es nuestra ruta de vuelo de 7 actos. A modo de control, dejamos abajo en gris la trazabilidad exacta contra cada uno de los 16 puntos del índice exigido por el curso, para que sepan exactamente dónde abordamos cada rúbrica, incluyendo el bono de 3 Box Solutions y Fusion Strategy.">
-            <h2>Hoja de ruta / índice</h2>
-            
-            <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 24px; margin-bottom: 60px; border-bottom: 2px solid var(--surface); padding-bottom: 20px;">
-                <span class="data" style="color: var(--accent); font-size: 24px; cursor: pointer;" data-goto="1">0. Apertura</span>
-                <span class="data" style="font-size: 24px; cursor: pointer;" data-goto="3">1. Negocio</span>
-                <span class="data" style="color: var(--text-high); font-size: 24px; font-weight: bold; cursor: pointer;" data-goto="7">2. Por qué estos dolores</span>
-                <span class="data" style="font-size: 24px; cursor: pointer;" data-goto="14">3. Productos de datos</span>
-                <span class="data" style="font-size: 24px; cursor: pointer;" data-goto="21">4. Ejecución</span>
-                <span class="data" style="font-size: 24px; cursor: pointer;" data-goto="24">5. Dinero y gobierno</span>
-                <span class="data" style="font-size: 24px; cursor: pointer;" data-goto="26">6. Bono</span>
-                <span class="data" style="font-size: 24px; cursor: pointer;" data-goto="28">7. Cierre</span>
-            </div>
-            
-            <div class="evidence">
-                <table class="data-table" style="font-size: 22px;">
-                    <tr><th>Punto del índice del curso</th><th>Dónde se ve</th><th>Punto del índice del curso</th><th>Dónde se ve</th></tr>
-                    <tr><td>Intro compañía: misión, visión, estrategia</td><td class="data">Acto 1</td><td>SQUAD e interacción D&A / negocio</td><td class="data">Acto 4</td></tr>
-                    <tr><td>Business Model Canvas</td><td class="data">Acto 1</td><td>Estrategia analítica: diagnóstica + predictiva</td><td class="data">Acto 3</td></tr>
-                    <tr><td>5 dolores en procesos clave</td><td class="data">Acto 2</td><td>3 insights con dashboard</td><td class="data">Acto 3</td></tr>
-                    <tr><td>Data Analytics Strategy Canvas por objetivo</td><td class="data">Acto 2</td><td>5W+2H de las acciones</td><td class="data">Acto 3</td></tr>
-                    <tr><td>Priorización de 2 dolores clave</td><td class="data">Acto 2</td><td>Herramientas, algoritmos y arquitectura</td><td class="data">Acto 4</td></tr>
-                    <tr><td>Definición del problema con técnicas del curso</td><td class="data">Acto 2</td><td>Data Product Canvas por producto</td><td class="data">Acto 3</td></tr>
-                    <tr><td>Excelencia en el servicio: atributos y valoración</td><td class="data">Acto 2</td><td>Monetización, ética, PII y legal</td><td class="data">Acto 5</td></tr>
-                    <tr><td>Conversión de dolores en productos de datos</td><td class="data">Acto 3</td><td class="highlight">BONO: 3 Box Solutions y Fusion Strategy</td><td class="data highlight">Acto 6</td></tr>
-                </table>
-            </div>
-        </div>
-
         <!-- Slide 3 -->
         <div class="slide" data-notes="[Acto 1 - 3 min total] ECOWAX no compite por precio, compite por calidad y servicio. El producto va con el técnico a planta. Tienen certificaciones BRCGS y CAAE, que abren mercados exigentes. Pero hay un riesgo gigante: el insumo principal viene de un único origen en Brasil con 4-8 semanas de lead time.">
             <h2>Quién es ECOWAX</h2>
@@ -945,7 +915,7 @@
         </div>
 
         <!-- Slide 15.1 (QR) -->
-        <div class="slide" style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 40px;" data-notes="Slide de transición para que la audiencia escanee el QR e ingrese a la aplicación.">
+        <div class="slide" style="align-items: center; justify-content: center; text-align: center; gap: 40px;" data-notes="Slide de transición para que la audiencia escanee el QR e ingrese a la aplicación.">
             <h2 style="font-size: 48px; border-bottom: none; margin: 0; color: var(--text-high);">Escanea para entrar a la Demo en vivo</h2>
             
             <div style="background: var(--surface); padding: 40px; border-radius: 24px; border: 2px solid rgba(147,168,156,0.3); display: flex; flex-direction: column; align-items: center; gap: 32px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
@@ -1555,6 +1525,13 @@
         <div id="progress-bar"></div>
     </div>
     
+    <!-- Floating Navigation Overlay -->
+    <div id="nav-controls" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; z-index: 99999; background: #1A2B22; padding: 10px 24px; border-radius: 40px; border: 1px solid rgba(147, 168, 156, 0.5); color: white; font-family: var(--font-mono); box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+        <button id="btn-prev-slide" style="background: rgba(255,255,255,0.15); border: none; color: #FFFFFF; font-size: 16px; cursor: pointer; padding: 8px 18px; border-radius: 20px; font-weight: bold; font-family: var(--font-mono);" title="Anterior (←)">‹ Anterior</button>
+        <span id="nav-indicator" style="font-size: 16px; color: #93A89C; padding: 0 12px; font-weight: bold;">1 / 28</span>
+        <button id="btn-next-slide" style="background: var(--accent); border: none; color: #FFFFFF; font-size: 16px; cursor: pointer; padding: 8px 18px; border-radius: 20px; font-weight: bold; font-family: var(--font-mono);" title="Siguiente (→)">Siguiente ›</button>
+    </div>
+
     <div id="speaker-notes"></div>
 
     <script>
@@ -1577,8 +1554,11 @@
         const chartInstances = {};
 
         function initChartsForSlide(slideIndex) {
+            const activeSlide = slides[slideIndex];
+            if (!activeSlide) return;
+
             // S11 Scenario Chart
-            if(slideIndex === 10 && !chartInstances['scenarioChart']) {
+            if(activeSlide.querySelector('#scenarioChart') && !chartInstances['scenarioChart']) {
                 chartInstances['scenarioChart'] = new Chart(document.getElementById('scenarioChart'), {
                     type: 'bar',
                     data: {
@@ -1608,7 +1588,7 @@
                 });
             }
             // S12 Radar
-            if(slideIndex === 11 && !chartInstances['radarChart']) {
+            if(activeSlide.querySelector('#radarChart') && !chartInstances['radarChart']) {
                 chartInstances['radarChart'] = new Chart(document.getElementById('radarChart'), {
                     type: 'radar',
                     data: {
@@ -1624,7 +1604,7 @@
             }
             
             // S13 Scatter
-            if(slideIndex === 12 && !chartInstances['scatterChart']) {
+            if(activeSlide.querySelector('#scatterChart') && !chartInstances['scatterChart']) {
                 chartInstances['scatterChart'] = new Chart(document.getElementById('scatterChart'), {
                     type: 'scatter',
                     data: {
@@ -1722,7 +1702,7 @@
             }
             
             // S16 Insight 1
-            if(slideIndex === 15 && !chartInstances['insight1Chart']) {
+            if(activeSlide.querySelector('#insight1Chart') && !chartInstances['insight1Chart']) {
                 chartInstances['insight1Chart'] = new Chart(document.getElementById('insight1Chart'), {
                     type: 'line',
                     data: {
@@ -1765,7 +1745,7 @@
             }
             
             // S17 Insight 3
-            if(slideIndex === 16 && !chartInstances['insight3Chart']) {
+            if(activeSlide.querySelector('#insight3Chart') && !chartInstances['insight3Chart']) {
                 chartInstances['insight3Chart'] = new Chart(document.getElementById('insight3Chart'), {
                     type: 'bar',
                     data: {
@@ -1787,7 +1767,7 @@
             }
             
             // S18 Maqueta Forecast
-            if(slideIndex === 17 && !chartInstances['forecastChart']) {
+            if(activeSlide.querySelector('#forecastChart') && !chartInstances['forecastChart']) {
                 chartInstances['forecastChart'] = new Chart(document.getElementById('forecastChart'), {
                     type: 'line',
                     data: {
@@ -1802,7 +1782,7 @@
             }
 
             // S19 Pareto
-            if(slideIndex === 18 && !chartInstances['paretoChart']) {
+            if(activeSlide.querySelector('#paretoChart') && !chartInstances['paretoChart']) {
                 chartInstances['paretoChart'] = new Chart(document.getElementById('paretoChart'), {
                     type: 'bar',
                     data: {
@@ -1821,7 +1801,7 @@
             }
             
             // S20 SPC
-            if(slideIndex === 19 && !chartInstances['spcChart']) {
+            if(activeSlide.querySelector('#spcChart') && !chartInstances['spcChart']) {
                 chartInstances['spcChart'] = new Chart(document.getElementById('spcChart'), {
                     type: 'line',
                     data: {
@@ -1841,7 +1821,7 @@
             }
             
             // S24 Waterfall
-            if(slideIndex === 23 && !chartInstances['waterfallChart']) {
+            if(activeSlide.querySelector('#waterfallChart') && !chartInstances['waterfallChart']) {
                 chartInstances['waterfallChart'] = new Chart(document.getElementById('waterfallChart'), {
                     type: 'bar',
                     data: {
@@ -1864,43 +1844,84 @@
             slides.forEach((s, i) => {
                 s.classList.toggle('active', i === currentSlide);
             });
-            progressBar.style.width = ((currentSlide + 1) / slides.length) * 100 + '%';
-            document.getElementById('slide-number').innerText = (currentSlide + 1) + ' / ' + slides.length;
+            
+            const total = slides.length;
+            const currentNum = currentSlide + 1;
+            const labelText = currentNum + ' / ' + total;
+            
+            if (progressBar) progressBar.style.width = (currentNum / total) * 100 + '%';
+            const slideNumEl = document.getElementById('slide-number');
+            if (slideNumEl) slideNumEl.innerText = labelText;
+            const navIndEl = document.getElementById('nav-indicator');
+            if (navIndEl) navIndEl.innerText = labelText;
             
             isNavigating = true;
-            history.replaceState(null, '', '#/' + (currentSlide + 1).toString().padStart(2, '0'));
+            try {
+                history.replaceState(null, '', '#/' + currentNum.toString().padStart(2, '0'));
+            } catch (e) {}
             setTimeout(() => { isNavigating = false; }, 50);
             
-            const note = slides[currentSlide].getAttribute('data-notes');
-            if(note) {
-                notesPanel.innerHTML = `<strong>Notas:</strong><br><br>${note}`;
-            } else {
-                notesPanel.innerHTML = '';
+            const activeSlide = slides[currentSlide];
+            const note = activeSlide ? activeSlide.getAttribute('data-notes') : '';
+            if (notesPanel) {
+                notesPanel.innerHTML = note ? ('<strong>Notas:</strong><br><br>' + note) : '';
             }
             
-            initChartsForSlide(currentSlide);
+            try {
+                initChartsForSlide(currentSlide);
+            } catch (err) {
+                console.error('Chart init error:', err);
+            }
             
             requestAnimationFrame(() => {
-                Object.values(chartInstances).forEach(c => c.resize());
+                Object.values(chartInstances).forEach(c => {
+                    if (c && typeof c.resize === 'function') {
+                        try { c.resize(); } catch(e) {}
+                    }
+                });
             });
         }
 
-        function nextSlide() { if (currentSlide < slides.length - 1) { currentSlide++; updateSlide(); } }
-        function prevSlide() { if (currentSlide > 0) { currentSlide--; updateSlide(); } }
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
 
         function scaleDeck() {
+            if (!container) return;
             const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
             container.style.transform = `translate(-50%, -50%) scale(${scale})`;
-            requestAnimationFrame(() => { Object.values(chartInstances).forEach(c => c.resize()); });
+            requestAnimationFrame(() => {
+                Object.values(chartInstances).forEach(c => {
+                    if (c && typeof c.resize === 'function') {
+                        try { c.resize(); } catch(e) {}
+                    }
+                });
+            });
         }
         window.addEventListener('resize', scaleDeck);
         scaleDeck();
 
         window.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
-            if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+            if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            }
+            if (e.key === 'ArrowLeft' || e.key === 'ArrowUp' || e.key === 'PageUp') {
+                e.preventDefault();
+                prevSlide();
+            }
             if (e.key.toLowerCase() === 'n') {
-                notesPanel.style.display = notesPanel.style.display === 'block' ? 'none' : 'block';
+                if (notesPanel) notesPanel.style.display = notesPanel.style.display === 'block' ? 'none' : 'block';
             }
             if (e.key.toLowerCase() === 'f') {
                 if (!document.fullscreenElement) document.documentElement.requestFullscreen();
@@ -1909,19 +1930,33 @@
         });
         
         document.addEventListener('click', (e) => {
-            if (e.target.closest('[data-goto], a, button')) {
-                const target = e.target.closest('[data-goto]');
-                if(target) {
-                    const slideNum = parseInt(target.getAttribute('data-goto'), 10);
-                    if(!isNaN(slideNum) && slideNum >= 1 && slideNum <= slides.length) {
-                        currentSlide = slideNum - 1;
-                        updateSlide();
-                    }
+            const prevBtn = e.target.closest('#btn-prev-slide');
+            if (prevBtn) {
+                prevSlide();
+                return;
+            }
+            const nextBtn = e.target.closest('#btn-next-slide');
+            if (nextBtn) {
+                nextSlide();
+                return;
+            }
+            const gotoBtn = e.target.closest('[data-goto]');
+            if (gotoBtn) {
+                const slideNum = parseInt(gotoBtn.getAttribute('data-goto'), 10);
+                if (!isNaN(slideNum) && slideNum >= 1 && slideNum <= slides.length) {
+                    currentSlide = slideNum - 1;
+                    updateSlide();
                 }
                 return;
             }
-            if (e.clientX > window.innerWidth * 0.8) nextSlide();
-            else if (e.clientX < window.innerWidth * 0.2) prevSlide();
+            if (e.target.closest('#nav-controls, a, button, input, select')) {
+                return;
+            }
+            if (e.clientX < window.innerWidth * 0.3) {
+                prevSlide();
+            } else {
+                nextSlide();
+            }
         });
         
         let touchStartX = 0;
@@ -1945,12 +1980,14 @@
         }
         window.addEventListener('hashchange', handleHash);
         
-        window.addEventListener('beforeprint', () => { container.style.transform = 'none'; });
+        window.addEventListener('beforeprint', () => { if (container) container.style.transform = 'none'; });
         
         window.onload = () => {
             handleHash();
             updateSlide();
         }
     </script>
+</body>
+</html>
 </body>
 </html>
