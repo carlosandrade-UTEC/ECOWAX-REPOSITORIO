@@ -17,7 +17,7 @@ import {
   ShieldCheck,
   Users,
   HelpCircle,
-  Lock,
+  X,
 } from 'lucide-react';
 
 interface MenuItem {
@@ -34,7 +34,7 @@ interface MenuSection {
 }
 
 export function Sidebar() {
-  const { getPermiso } = useAppStore();
+  const { getPermiso, mobileMenuOpen, closeMobileMenu } = useAppStore();
   const location = useLocation();
 
   const sections: MenuSection[] = [
@@ -75,88 +75,116 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="w-64 bg-[#166534] border-r border-green-800 text-white flex flex-col fixed top-[88px] bottom-0 left-0 z-30 select-none overflow-y-auto shrink-0 shadow-lg">
-      <div className="p-4 space-y-6 flex-1">
-        {sections.map((section) => {
-          // Filtrar ítems visibles según permisos
-          const visibleItems = section.items.filter((item) => {
-            if (item.disabled) return true; // los deshabilitados se muestran con etiqueta
-            const permiso = getPermiso(item.id);
-            return permiso !== 'NINGUNO';
-          });
+    <>
+      {/* Fondo oscuro traslúcido para cerrar el menú en móviles/tablets */}
+      {mobileMenuOpen && (
+        <div
+          onClick={closeMobileMenu}
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-40 lg:hidden transition-opacity duration-300 animate-fadeIn"
+          aria-hidden="true"
+        />
+      )}
 
-          if (visibleItems.length === 0) return null;
+      {/* Menú Lateral Responsive (Drawer en pantallas móviles y barra fija en escritorio) */}
+      <aside
+        className={`w-64 bg-[#166534] border-r border-green-800 text-white flex flex-col fixed top-[88px] bottom-0 left-0 z-50 select-none overflow-y-auto shrink-0 shadow-2xl lg:shadow-lg transition-transform duration-300 ease-in-out ${
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}
+      >
+        {/* Cabecera superior del drawer móvil */}
+        <div className="flex items-center justify-between p-4 border-b border-green-700/60 lg:hidden bg-green-900/50">
+          <span className="font-extrabold text-xs tracking-wider text-green-100 uppercase">Menú de Navegación</span>
+          <button
+            onClick={closeMobileMenu}
+            className="p-1.5 rounded-lg text-green-200 hover:text-white hover:bg-green-800 transition-colors"
+            aria-label="Cerrar Menú"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-          return (
-            <div key={section.title}>
-              <h3 className="px-3 text-[11px] font-bold text-green-200/80 uppercase tracking-wider mb-2">
-                {section.title}
-              </h3>
-              <ul className="space-y-1">
-                {visibleItems.map((item) => {
-                  const Icon = item.icon;
+        <div className="p-4 space-y-6 flex-1">
+          {sections.map((section) => {
+            const visibleItems = section.items.filter((item) => {
+              if (item.disabled) return true;
+              const permiso = getPermiso(item.id);
+              return permiso !== 'NINGUNO';
+            });
 
-                  if (item.disabled) {
+            if (visibleItems.length === 0) return null;
+
+            return (
+              <div key={section.title}>
+                <h3 className="px-3 text-[11px] font-bold text-green-200/80 uppercase tracking-wider mb-2">
+                  {section.title}
+                </h3>
+                <ul className="space-y-1">
+                  {visibleItems.map((item) => {
+                    const Icon = item.icon;
+
+                    if (item.disabled) {
+                      return (
+                        <li key={item.label}>
+                          <div
+                            className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-green-300/60 cursor-not-allowed opacity-75"
+                            title="Funcionalidad programada para la siguiente iteración"
+                          >
+                            <div className="flex items-center space-x-3">
+                              <Icon className="w-4 h-4 text-green-300/60" />
+                              <span className="font-medium">{item.label}</span>
+                            </div>
+                            <span className="text-[9px] px-2 py-0.5 rounded-full bg-green-900/60 text-green-200 font-semibold border border-green-700">
+                              Próx.
+                            </span>
+                          </div>
+                        </li>
+                      );
+                    }
+
                     return (
-                      <li key={item.label}>
-                        <div
-                          className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs text-green-300/60 cursor-not-allowed opacity-75"
-                          title="Funcionalidad programada para la siguiente iteración"
+                      <li key={item.path}>
+                        <NavLink
+                          to={item.path}
+                          onClick={closeMobileMenu}
+                          className={({ isActive }) =>
+                            `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                              isActive
+                                ? 'bg-[#15803D] text-white font-bold shadow-sm'
+                                : 'text-green-100 hover:bg-green-700/60 hover:text-white'
+                            }`
+                          }
                         >
                           <div className="flex items-center space-x-3">
-                            <Icon className="w-4 h-4 text-green-300/60" />
-                            <span className="font-medium">{item.label}</span>
+                            <Icon className="w-4 h-4" />
+                            <span>{item.label}</span>
                           </div>
-                          <span className="text-[9px] px-2 py-0.5 rounded-full bg-green-900/60 text-green-200 font-semibold border border-green-700">
-                            Próx.
-                          </span>
-                        </div>
+                        </NavLink>
                       </li>
                     );
-                  }
-
-                  return (
-                    <li key={item.path}>
-                      <NavLink
-                        to={item.path}
-                        className={({ isActive }) =>
-                          `flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
-                            isActive
-                              ? 'bg-[#15803D] text-white font-bold shadow-sm'
-                              : 'text-green-100 hover:bg-green-700/60 hover:text-white'
-                          }`
-                        }
-                      >
-                        <div className="flex items-center space-x-3">
-                          <Icon className="w-4 h-4" />
-                          <span>{item.label}</span>
-                        </div>
-                      </NavLink>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="p-4 mt-auto">
-        <div className="bg-[#14532D] rounded-2xl p-4 text-white space-y-2.5 shadow-sm border border-green-800">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] text-green-200 font-semibold uppercase tracking-wider">Reglas de Negocio</span>
-            <span className="font-mono text-emerald-300 font-bold text-[10px] bg-green-900/80 px-2 py-0.5 rounded-full border border-green-700">
-              RB-2026.08
-            </span>
-          </div>
-          <div className="h-1.5 w-full bg-green-900 rounded-full overflow-hidden">
-            <div className="h-full w-4/5 bg-emerald-400 rounded-full"></div>
-          </div>
-          <p className="text-[11px] text-green-200/80 font-medium">
-            ECOPROA E.I.R.L. © 2026
-          </p>
+                  })}
+                </ul>
+              </div>
+            );
+          })}
         </div>
-      </div>
-    </aside>
+
+        <div className="p-4 mt-auto">
+          <div className="bg-[#14532D] rounded-2xl p-4 text-white space-y-2.5 shadow-sm border border-green-800">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-green-200 font-semibold uppercase tracking-wider">Reglas de Negocio</span>
+              <span className="font-mono text-emerald-300 font-bold text-[10px] bg-green-900/80 px-2 py-0.5 rounded-full border border-green-700">
+                RB-2026.08
+              </span>
+            </div>
+            <div className="h-1.5 w-full bg-green-900 rounded-full overflow-hidden">
+              <div className="h-full w-4/5 bg-emerald-400 rounded-full"></div>
+            </div>
+            <p className="text-[11px] text-green-200/80 font-medium">
+              ECOPROA E.I.R.L. © 2026
+            </p>
+          </div>
+        </div>
+      </aside>
+    </>
   );
 }

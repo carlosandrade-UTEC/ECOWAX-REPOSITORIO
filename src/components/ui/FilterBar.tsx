@@ -17,12 +17,12 @@ export function FilterBar() {
         <span>Filtros Operativos:</span>
       </div>
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3 w-full sm:w-auto">
         {/* Zona */}
         <select
           value={filters.zonaId || ''}
           onChange={(e) => setFilters({ zonaId: e.target.value || undefined })}
-          className="bg-slate-50 hover:bg-slate-100/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#15803D] transition-all"
+          className="w-full sm:w-auto bg-slate-50 hover:bg-slate-100/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#15803D] transition-all"
         >
           <option value="">Todas las Zonas</option>
           {zonas.map((z) => (
@@ -36,7 +36,7 @@ export function FilterBar() {
         <select
           value={filters.campaniaId || ''}
           onChange={(e) => setFilters({ campaniaId: e.target.value || undefined })}
-          className="bg-slate-50 hover:bg-slate-100/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#15803D] transition-all"
+          className="w-full sm:w-auto bg-slate-50 hover:bg-slate-100/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#15803D] transition-all"
         >
           <option value="">Todas las Campañas</option>
           {campanias.map((c) => (
@@ -50,7 +50,7 @@ export function FilterBar() {
         <select
           value={filters.claseAbc || 'TODOS'}
           onChange={(e) => setFilters({ claseAbc: e.target.value as any })}
-          className="bg-slate-50 hover:bg-slate-100/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#15803D] font-bold transition-all"
+          className="w-full sm:w-auto bg-slate-50 hover:bg-slate-100/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#15803D] font-bold transition-all"
         >
           <option value="TODOS">Todas las Clases ABC</option>
           <option value="A">Clase A (Alto impacto)</option>
@@ -62,7 +62,7 @@ export function FilterBar() {
         <select
           value={filters.proveedorId || ''}
           onChange={(e) => setFilters({ proveedorId: e.target.value || undefined })}
-          className="bg-slate-50 hover:bg-slate-100/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#15803D] transition-all"
+          className="w-full sm:w-auto bg-slate-50 hover:bg-slate-100/80 border border-slate-200 text-slate-800 rounded-xl px-3 py-2 font-medium focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-[#15803D] transition-all"
         >
           <option value="">Todos los Proveedores</option>
           {proveedores.map((p) => (
@@ -76,7 +76,7 @@ export function FilterBar() {
         {hasActiveFilters && (
           <button
             onClick={clearFilters}
-            className="flex items-center space-x-1.5 text-[#15803D] hover:text-[#14532D] px-3 py-2 bg-green-50 hover:bg-green-100 rounded-xl transition-all font-bold cursor-pointer"
+            className="w-full sm:w-auto flex items-center justify-center space-x-1.5 text-[#15803D] hover:text-[#14532D] px-3 py-2 bg-green-50 hover:bg-green-100 rounded-xl transition-all font-bold cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Limpiar</span>

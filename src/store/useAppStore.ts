@@ -43,9 +43,10 @@ interface AppStoreState {
   umbrales: UmbralKPI[];
   kpis: RegistroKPI[];
 
-  // Estados de carga
+  // Estados de carga y navegación UI
   loading: boolean;
   error: string | null;
+  mobileMenuOpen: boolean;
 
   // Acciones
   setCurrentUser: (user: Usuario | null) => void;
@@ -54,6 +55,8 @@ interface AppStoreState {
   clearFilters: () => void;
   loadInitialData: () => Promise<void>;
   submitDecision: (data: Omit<Decision, 'decision_id'>) => Promise<Decision>;
+  toggleMobileMenu: () => void;
+  closeMobileMenu: () => void;
   
   // Helper de verificación de permisos
   getPermiso: (modulo: ModuloApp) => PermisoNivel;
@@ -81,6 +84,10 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
 
   loading: false,
   error: null,
+  mobileMenuOpen: false,
+
+  toggleMobileMenu: () => set((state) => ({ mobileMenuOpen: !state.mobileMenuOpen })),
+  closeMobileMenu: () => set({ mobileMenuOpen: false }),
 
   setCurrentUser: (user: Usuario | null) => {
     set({ currentUser: user });

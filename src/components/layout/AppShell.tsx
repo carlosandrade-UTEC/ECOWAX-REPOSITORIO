@@ -22,8 +22,8 @@ export function AppShell({ children }: AppShellProps) {
       <DemoBanner />
       <TopBar />
       <Sidebar />
-      <main className="ml-64 pt-[88px] min-h-screen p-8 pb-16">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <main className="lg:ml-64 pt-[88px] min-h-screen p-3 sm:p-6 lg:p-8 pb-16 transition-all duration-300 overflow-x-hidden">
+        <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
           {children}
         </div>
       </main>

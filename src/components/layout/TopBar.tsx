@@ -2,11 +2,11 @@ import React from 'react';
 import { useAppStore } from '../../store/useAppStore';
 import { dataProvider } from '../../services/dataProvider';
 import { Usuario } from '../../types';
-import { User, Calendar, RefreshCw, ChevronDown, Shield, LogOut } from 'lucide-react';
+import { User, Calendar, RefreshCw, ChevronDown, Shield, LogOut, Menu, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export function TopBar() {
-  const { currentUser, setCurrentUser, logout } = useAppStore();
+  const { currentUser, setCurrentUser, logout, mobileMenuOpen, toggleMobileMenu } = useAppStore();
   const [userList, setUserList] = React.useState<Usuario[]>([]);
   const [dropdownOpen, setDropdownOpen] = React.useState(false);
   const navigate = useNavigate();
@@ -27,8 +27,16 @@ export function TopBar() {
   };
 
   return (
-    <header className="fixed top-[32px] left-0 right-0 h-14 bg-[#14532D] text-white flex items-center justify-between px-6 z-40 border-b border-green-900 shadow-md">
-      <div className="flex items-center space-x-4">
+    <header className="fixed top-[32px] left-0 right-0 h-14 bg-[#14532D] text-white flex items-center justify-between px-3 sm:px-6 z-40 border-b border-green-900 shadow-md">
+      <div className="flex items-center space-x-2 sm:space-x-4">
+        {/* Botón de Menú Hamburguesa para Celular y Tablet */}
+        <button
+          onClick={toggleMobileMenu}
+          className="lg:hidden p-2 rounded-xl bg-green-800 hover:bg-green-700 text-white transition-colors cursor-pointer border border-green-700"
+          aria-label="Abrir Menú de Navegación"
+        >
+          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+        </button>
         <div 
           onClick={() => navigate('/inicio')}
           className="flex items-center space-x-3 cursor-pointer group"
