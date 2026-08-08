@@ -1,16 +1,23 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useAppStore } from '../store/useAppStore';
 import { dataProvider } from '../services/dataProvider';
 import { RevisionMensual, Decision, AccionRevision, Sku } from '../types';
 import { formatoFechaISOAFormatoPeruano } from '../engine/formato';
-import { Printer, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Unauthorized403 } from './Unauthorized403';
+import { Printer, ArrowLeft, CheckCircle2, ShieldCheck, AlertTriangle, ShieldAlert } from 'lucide-react';
 
 export function ActaRevisionPage() {
   const { id } = useParams<{ id: string }>();
+  const { getPermiso } = useAppStore();
+  const permiso = getPermiso('revision_mensual');
+
   const [review, setReview] = React.useState<RevisionMensual | null>(null);
   const [decisiones, setDecisiones] = React.useState<Decision[]>([]);
   const [acciones, setAcciones] = React.useState<AccionRevision[]>([]);
   const [skus, setSkus] = React.useState<Sku[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [notFound, setNotFound] = React.useState(false);
 
   React.useEffect(() => {
     Promise.all([
@@ -19,21 +26,55 @@ export function ActaRevisionPage() {
       dataProvider.getAccionesRevision(),
       dataProvider.getSkus(),
     ]).then(([revs, decs, accs, skuList]) => {
-      const found = revs.find((r) => r.review_id === id) || revs[revs.length - 1];
+      const found = revs.find((r) => r.review_id === id);
+      if (!found) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
+
       setReview(found);
       setSkus(skuList);
 
-      const p = found ? found.periodo : '2026-08';
+      const p = found.periodo;
       setDecisiones(decs.filter((d) => d.periodo === p));
-      setAcciones(accs.filter((a) => a.review_id === found?.review_id || a.review_id === 'REV-2026-08'));
+      setAcciones(accs.filter((a) => a.review_id === found.review_id));
+      setLoading(false);
     });
   }, [id]);
+
+  if (permiso === 'NINGUNO') {
+    return <Unauthorized403 />;
+  }
+
+  if (loading) {
+    return (
+      <div className="p-8 text-center font-mono text-xs text-slate-500">
+        Cargando Acta de Revisión S&OP...
+      </div>
+    );
+  }
+
+  if (notFound || !review) {
+    return (
+      <div className="max-w-md mx-auto my-12 p-6 bg-white border border-rose-200 rounded-xl text-center space-y-4 shadow-md">
+        <ShieldAlert className="w-12 h-12 text-rose-600 mx-auto" />
+        <h2 className="text-lg font-bold text-slate-900">404 — Revisión Mensual No Encontrada</h2>
+        <p className="text-xs text-slate-500">
+          No se encontró ningún acta de revisión para el identificador "<span className="font-mono font-bold text-slate-800">{id}</span>".
+        </p>
+        <Link to="/revision-mensual" className="inline-block px-4 py-2 bg-slate-800 text-white font-bold text-xs rounded-lg shadow-xs hover:bg-slate-900">
+          Volver a Revisión Mensual
+        </Link>
+      </div>
+    );
+  }
 
   const handlePrint = () => {
     window.print();
   };
 
-  const periodoStr = review ? review.periodo : '2026-08';
+  const esOficial = review.estado === 'CERRADA';
 
   return (
     <div className="max-w-4xl mx-auto space-y-6 py-6 px-4 bg-white min-h-screen text-slate-900 font-sans">
@@ -56,105 +97,140 @@ export function ActaRevisionPage() {
         </button>
       </div>
 
-      {/* DOCUMENTO OFICIAL ACTA DE REVISIÓN */}
-      <div className="border border-slate-300 p-8 rounded-lg space-y-6 shadow-sm print:border-none print:shadow-none print:p-0">
-        {/* Encabezado del Acta */}
-        <div className="border-b-2 border-slate-900 pb-4 flex items-start justify-between">
-          <div className="space-y-1">
-            <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">
-              SISTEMA DE GOBIERNO Y CONTROL DE ABASTECIMIENTO (S&OP)
+      {/* MARCA DE AGUA BORRADOR PARA REVISIONES ABIERTAS */}
+      {!esOficial && (
+        <div className="p-3 bg-amber-50 border-2 border-amber-300 rounded-xl flex items-center justify-between gap-3 text-amber-900 shadow-xs print:bg-white print:border-amber-400">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
+            <div>
+              <span className="font-extrabold text-xs tracking-wider uppercase block">
+                BORRADOR DE TRABAJO — REVISIÓN ABIERTA (NO OFICIAL)
+              </span>
+              <p className="text-[11px] text-amber-800">
+                Esta acta pertenece a un comité en curso. Los acuerdos y cantidades aún no son finales hasta el cierre formal.
+              </p>
             </div>
-            <h1 className="text-2xl font-black text-slate-900 uppercase tracking-tight">
-              Acta Oficial de Revisión Mensual — {periodoStr}
+          </div>
+          <span className="px-2.5 py-1 bg-amber-200 text-amber-900 font-extrabold text-[10px] rounded uppercase font-mono border border-amber-300">
+            BORRADOR
+          </span>
+        </div>
+      )}
+
+      {/* DOCUMENTO OFICIAL ACTA DE REVISIÓN */}
+      <div className="border border-slate-300 p-8 rounded-lg space-y-6 shadow-sm print:border-none print:shadow-none print:p-0 relative overflow-hidden">
+        {!esOficial && (
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-30deg] pointer-events-none opacity-10 select-none">
+            <span className="text-8xl font-black font-mono text-amber-900 border-8 border-amber-900 p-6 rounded-3xl uppercase">
+              BORRADOR
+            </span>
+          </div>
+        )}
+
+        {/* Encabezado Corporativo */}
+        <div className="flex justify-between items-start border-b-2 border-slate-900 pb-4">
+          <div>
+            <span className="text-xs font-extrabold font-mono text-emerald-800 uppercase tracking-widest block">
+              ECOWAX PERÚ S.A.
+            </span>
+            <h1 className="text-xl font-black text-slate-900 mt-1 uppercase">
+              Acta de Revisión Mensual S&OP — {review.periodo}
             </h1>
-            <p className="text-xs text-slate-600 font-medium">
-              Comité de Gobierno de Compras, Inventarios y Operaciones
+            <p className="text-xs text-slate-600 mt-0.5 font-medium">
+              Comité Ejecutivo de Abastecimiento de Insumos Críticos Importados
             </p>
           </div>
 
-          <div className="text-right font-mono text-xs space-y-1">
-            <span className="inline-block px-2.5 py-1 bg-slate-100 font-bold border border-slate-300 rounded text-slate-800">
-              CÓDIGO: {review?.review_id || id || 'REV-2026-08'}
+          <div className="text-right font-mono text-xs">
+            <span className="font-bold text-slate-900 block">ID: {review.review_id}</span>
+            <span className="text-slate-500 text-[11px]">
+              Fecha: {formatoFechaISOAFormatoPeruano(review.fecha)}
             </span>
-            <div className="text-slate-500 text-[11px]">
-              Fecha: {review?.fecha ? formatoFechaISOAFormatoPeruano(review.fecha) : '05/08/2026'}
-            </div>
           </div>
         </div>
 
-        {/* Participantes y Presidencia */}
-        <div className="bg-slate-50 border border-slate-200 p-4 rounded-md grid grid-cols-2 gap-4 text-xs">
+        {/* Datos de la Sesión */}
+        <div className="grid grid-cols-2 gap-4 text-xs font-mono bg-slate-50 p-4 rounded-lg border border-slate-200">
           <div>
-            <span className="font-bold text-slate-500 uppercase tracking-wider block text-[10px] mb-1">
-              Presidida Por:
-            </span>
-            <span className="font-extrabold text-slate-900">
-              {review?.presidida_por || 'USR-003 (Marta Chávez - Gerente Operaciones)'}
-            </span>
+            <span className="text-slate-500 font-bold block">Presidida Por:</span>
+            <span className="font-bold text-slate-900">{review.presidida_por}</span>
           </div>
-
           <div>
-            <span className="font-bold text-slate-500 uppercase tracking-wider block text-[10px] mb-1">
-              Asistentes / Participantes:
+            <span className="text-slate-500 font-bold block">Estado de la Sesión:</span>
+            <span
+              className={`font-bold inline-block px-2 py-0.5 rounded text-[10px] mt-0.5 ${
+                esOficial
+                  ? 'bg-emerald-100 text-emerald-900 border border-emerald-300'
+                  : 'bg-amber-100 text-amber-900 border border-amber-300'
+              }`}
+            >
+              {esOficial ? 'CERRADA Y CONFORME' : 'ABIERTA / BORRADOR'}
             </span>
-            <div className="font-medium text-slate-800 leading-snug">
-              Rosa Quispe (Jefe Compras), Diego Ferrer (Planeamiento), Jorge Palma (Finanzas), Carlos Andrade (Gerencia General).
-            </div>
           </div>
         </div>
 
-        {/* Sección 1: Decisiones de Abastecimiento Aprobadas */}
+        {/* Decisiones Aprobadas en el Comité */}
         <div className="space-y-3">
-          <div className="flex items-center gap-2 border-b border-slate-300 pb-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 print:text-black" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">
-              1. Decisiones de Abastecimiento Aprobadas en el Comité
-            </h2>
-          </div>
+          <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-200 pb-1.5 flex items-center justify-between">
+            <span>1. Acuerdos y Decisiones de Compra Aprobadas</span>
+            <span className="font-mono text-slate-500 font-normal">
+              {decisiones.length} decisiones registradas
+            </span>
+          </h2>
 
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b-2 border-slate-300 bg-slate-100 font-bold uppercase text-[10px] text-slate-700">
-                <th className="py-2 px-2">SKU / Descripción</th>
-                <th className="py-2 px-2 text-right">Sugerido</th>
-                <th className="py-2 px-2 text-right">Final Acordado</th>
+              <tr className="border-b border-slate-300 font-mono font-bold text-slate-700 text-[10px] uppercase">
+                <th className="py-2 px-2">ID Decisión</th>
+                <th className="py-2 px-2">SKU</th>
                 <th className="py-2 px-2">Acción</th>
-                <th className="py-2 px-2">Responsable</th>
-                <th className="py-2 px-2">Comentario / Motivo</th>
+                <th className="py-2 px-2 font-mono text-right">Cant. Recom.</th>
+                <th className="py-2 px-2 font-mono text-right">Cant. Final</th>
+                <th className="py-2 px-2 font-mono text-right">Desviación</th>
+                <th className="py-2 px-2">Justificación / Motivo</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 font-mono text-[11px]">
               {decisiones.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-4 text-center text-slate-500 font-sans italic">
-                    Sin decisiones registradas para esta sesión.
+                  <td colSpan={7} className="py-4 text-center text-slate-400 font-sans italic">
+                    No hay decisiones registradas en esta revisión.
                   </td>
                 </tr>
               ) : (
                 decisiones.map((d) => {
-                  const skuObj = skus.find((s) => s.sku_id === d.sku_id);
+                  const skuMatch = skus.find((s) => s.sku_id === d.sku_id);
                   return (
                     <tr key={d.decision_id} className="align-top">
+                      <td className="py-2.5 px-2 font-bold text-slate-900">{d.decision_id}</td>
                       <td className="py-2.5 px-2">
-                        <span className="font-bold block text-slate-900">{d.sku_id}</span>
-                        <span className="font-sans text-[10px] text-slate-600 block">
-                          {skuObj?.nombre || 'Insumo'}
+                        <span className="font-bold block text-slate-800">{d.sku_id}</span>
+                        <span className="text-[10px] text-slate-500 font-sans block">
+                          {skuMatch?.nombre || ''}
                         </span>
                       </td>
-                      <td className="py-2.5 px-2 text-right">
-                        {d.cantidad_recomendada.toLocaleString()}
+                      <td className="py-2.5 px-2">
+                        <span
+                          className={`font-bold text-[10px] px-1.5 py-0.5 rounded ${
+                            d.accion === 'APROBADA'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : d.accion === 'MODIFICADA'
+                              ? 'bg-amber-100 text-amber-800'
+                              : 'bg-rose-100 text-rose-800'
+                          }`}
+                        >
+                          {d.accion}
+                        </span>
                       </td>
-                      <td className="py-2.5 px-2 text-right font-extrabold text-blue-900 print:text-black">
-                        {d.cantidad_final.toLocaleString()}
+                      <td className="py-2.5 px-2 text-right">{d.cantidad_recomendada}</td>
+                      <td className="py-2.5 px-2 text-right font-bold text-slate-900">
+                        {d.cantidad_final}
                       </td>
-                      <td className="py-2.5 px-2 font-bold font-sans">
-                        {d.accion}
+                      <td className="py-2.5 px-2 text-right text-slate-700">
+                        {d.desviacion_pct > 0 ? `+${d.desviacion_pct}%` : `${d.desviacion_pct}%`}
                       </td>
-                      <td className="py-2.5 px-2 font-sans font-semibold">
-                        {d.usuario_id}
-                      </td>
-                      <td className="py-2.5 px-2 font-sans text-slate-700 text-[10px] leading-tight">
-                        {d.comentario || d.motivo_desviacion}
+                      <td className="py-2.5 px-2 font-sans text-slate-700 max-w-xs">
+                        {d.motivo_desviacion || d.comentario || 'Aprobado según recomendación del motor'}
                       </td>
                     </tr>
                   );
@@ -164,29 +240,29 @@ export function ActaRevisionPage() {
           </table>
         </div>
 
-        {/* Sección 2: Acuerdos y Compromisos */}
-        <div className="space-y-3 pt-2">
-          <div className="flex items-center gap-2 border-b border-slate-300 pb-1.5">
-            <ShieldCheck className="w-4 h-4 text-blue-600 print:text-black" />
-            <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900">
-              2. Acuerdos y Compromisos de Ejecución Derivados
-            </h2>
-          </div>
+        {/* Compromisos Abiertos */}
+        <div className="space-y-3">
+          <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-200 pb-1.5 flex items-center justify-between">
+            <span>2. Compromisos Abiertos y Tareas Asignadas</span>
+            <span className="font-mono text-slate-500 font-normal">
+              {acciones.length} tareas
+            </span>
+          </h2>
 
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b-2 border-slate-300 bg-slate-100 font-bold uppercase text-[10px] text-slate-700">
+              <tr className="border-b border-slate-300 font-mono font-bold text-slate-700 text-[10px] uppercase">
                 <th className="py-2 px-2">Código</th>
-                <th className="py-2 px-2">Descripción del Acuerdo</th>
+                <th className="py-2 px-2">Descripción de la Tarea</th>
                 <th className="py-2 px-2">Responsable</th>
-                <th className="py-2 px-2">Fecha Objetivo</th>
+                <th className="py-2 px-2">Fecha Límite</th>
                 <th className="py-2 px-2">Estado</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 font-mono text-[11px]">
               {acciones.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-4 text-center text-slate-500 font-sans italic">
+                  <td colSpan={5} className="py-4 text-center text-slate-400 font-sans italic">
                     Sin compromisos adicionales pendientes para esta acta.
                   </td>
                 </tr>
@@ -212,7 +288,10 @@ export function ActaRevisionPage() {
               <span className="font-bold text-slate-800">Motor de Reglas Reorden:</span> RB-2026.08 (Vigente)
             </div>
             <div>
-              <span className="font-bold text-slate-800">Estado Acta:</span> CONFORME Y REGISTRADA
+              <span className="font-bold text-slate-800">Estado Acta:</span>{' '}
+              <span className={esOficial ? 'text-emerald-700 font-bold' : 'text-amber-700 font-bold'}>
+                {esOficial ? 'ACTA OFICIAL CONFORME Y REGISTRADA' : 'BORRADOR DE TRABAJO (REVISIÓN ABIERTA)'}
+              </span>
             </div>
           </div>
 

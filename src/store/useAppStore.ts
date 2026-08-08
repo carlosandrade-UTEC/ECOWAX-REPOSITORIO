@@ -60,6 +60,11 @@ interface AppStoreState {
   
   // Helper de verificación de permisos
   getPermiso: (modulo: ModuloApp) => PermisoNivel;
+  puedeLeer: (modulo: ModuloApp) => boolean;
+  puedeProponer: (modulo: ModuloApp) => boolean;
+  puedeEditar: (modulo: ModuloApp) => boolean;
+  puedeAprobar: (modulo: ModuloApp) => boolean;
+  puedeCerrar: (modulo: ModuloApp) => boolean;
 }
 
 export const useAppStore = create<AppStoreState>((set, get) => ({
@@ -192,7 +197,7 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
 
   getPermiso: (modulo: ModuloApp): PermisoNivel => {
     const { currentUser, permisosMapa } = get();
-    if (!currentUser) return 'NINGUNO';
+    if (!currentUser || currentUser.estado === 'INACTIVO') return 'NINGUNO';
     if (!permisosMapa) {
       const defaultPerms = (SEED_DATA_RAW as any).permisos;
       const rolPermisos = defaultPerms ? defaultPerms[currentUser.rol] : null;
@@ -201,5 +206,26 @@ export const useAppStore = create<AppStoreState>((set, get) => ({
     const rolPermisos = permisosMapa[currentUser.rol];
     if (!rolPermisos) return 'NINGUNO';
     return rolPermisos[modulo] || 'NINGUNO';
+  },
+
+  puedeLeer: (modulo: ModuloApp): boolean => {
+    return get().getPermiso(modulo) !== 'NINGUNO';
+  },
+
+  puedeProponer: (modulo: ModuloApp): boolean => {
+    const perm = get().getPermiso(modulo);
+    return perm === 'PROPUESTA' || perm === 'ESCRITURA';
+  },
+
+  puedeEditar: (modulo: ModuloApp): boolean => {
+    return get().getPermiso(modulo) === 'ESCRITURA';
+  },
+
+  puedeAprobar: (modulo: ModuloApp): boolean => {
+    return get().getPermiso(modulo) === 'ESCRITURA';
+  },
+
+  puedeCerrar: (modulo: ModuloApp): boolean => {
+    return get().getPermiso(modulo) === 'ESCRITURA';
   },
 }));

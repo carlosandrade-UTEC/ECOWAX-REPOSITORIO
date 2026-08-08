@@ -91,6 +91,10 @@ export function Login() {
     );
 
     if (match) {
+      if (match.estado === 'INACTIVO') {
+        setErrorAcceso(`Acceso denegado: El usuario "${match.nombre}" (${cleanEmail}) se encuentra INACTIVO en la hoja cfg_roles_permisos.`);
+        return;
+      }
       setCurrentUser(match);
       const fromPath = (location.state as any)?.from?.pathname || '/inicio';
       navigate(fromPath);

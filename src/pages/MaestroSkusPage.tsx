@@ -6,8 +6,9 @@ import { Unauthorized403 } from './Unauthorized403';
 import { Database, Edit, AlertTriangle, CheckCircle2, Search, Filter } from 'lucide-react';
 
 export function MaestroSkusPage() {
-  const { getPermiso, skus, loadInitialData } = useAppStore();
+  const { skus, getPermiso, puedeEditar, loadInitialData } = useAppStore();
   const permiso = getPermiso('maestros');
+  const esEditable = puedeEditar('maestros') || puedeEditar('inventario');
 
   const [searchTerm, setSearchTerm] = React.useState('');
   const [categoriaFilter, setCategoriaFilter] = React.useState('TODAS');
@@ -156,13 +157,15 @@ export function MaestroSkusPage() {
                     USD ${s.precio_referencia_usd.toFixed(2)}
                   </td>
                   <td className="px-3.5 py-2.5 text-right">
-                    <button
-                      onClick={() => handleEditClick(s)}
-                      className="p-1 text-[#15803D] hover:text-[#14532D] hover:bg-green-50 rounded transition-colors cursor-pointer"
-                      title="Editar SKU"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
+                    {esEditable && (
+                      <button
+                        onClick={() => handleEditClick(s)}
+                        className="p-1 text-[#15803D] hover:text-[#14532D] hover:bg-green-50 rounded transition-colors cursor-pointer"
+                        title="Editar SKU"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

@@ -15,7 +15,13 @@ import {
   Database
 } from 'lucide-react';
 
+import { useAppStore } from '../store/useAppStore';
+import { Unauthorized403 } from './Unauthorized403';
+
 export function AuditoríaPage() {
+  const { getPermiso } = useAppStore();
+  const permiso = getPermiso('auditoria');
+
   const [logs, setLogs] = useState<RegistroAuditoria[]>([]);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -48,6 +54,10 @@ export function AuditoríaPage() {
   useEffect(() => {
     cargarAuditoria();
   }, []);
+
+  if (permiso === 'NINGUNO') {
+    return <Unauthorized403 />;
+  }
 
   // Entidades únicas
   const entidadesDisponibles = useMemo(() => {

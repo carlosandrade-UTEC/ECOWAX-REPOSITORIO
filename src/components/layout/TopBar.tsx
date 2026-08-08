@@ -93,7 +93,7 @@ export function TopBar() {
                 <p className="text-[10px] text-slate-500">Determina los permisos en cfg_roles_permisos</p>
               </div>
               <div className="max-h-64 overflow-y-auto py-1">
-                {userList.map((u) => (
+                {userList.filter((u) => u.estado !== 'INACTIVO').map((u) => (
                   <button
                     key={u.usuario_id}
                     onClick={() => handleSelectUser(u)}

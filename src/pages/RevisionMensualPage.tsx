@@ -29,8 +29,10 @@ import {
 
 export function RevisionMensualPage() {
   const navigate = useNavigate();
-  const { getPermiso, currentUser } = useAppStore();
+  const { getPermiso, puedeEditar, puedeCerrar } = useAppStore();
   const permiso = getPermiso('revision_mensual');
+  const esEditable = puedeEditar('revision_mensual');
+  const esCerrable = puedeCerrar('revision_mensual');
 
   const [periodo, setPeriodo] = React.useState<string>('2026-08');
   const [revisiones, setRevisiones] = React.useState<RevisionMensual[]>([]);
@@ -444,13 +446,15 @@ export function RevisionMensualPage() {
             </p>
 
             <div className="space-y-2.5 pt-1">
-              <button
-                onClick={handleCerrarRevision}
-                className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-              >
-                <Lock className="w-4 h-4" />
-                <span>Cerrar Revisión ({periodo})</span>
-              </button>
+              {esCerrable && (
+                <button
+                  onClick={handleCerrarRevision}
+                  className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg transition-colors flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+                >
+                  <Lock className="w-4 h-4" />
+                  <span>Cerrar Revisión ({periodo})</span>
+                </button>
+              )}
 
               <Link
                 to={`/revision/${reviewActual.review_id}/acta`}
@@ -477,13 +481,15 @@ export function RevisionMensualPage() {
             </p>
           </div>
 
-          <button
-            onClick={() => setShowAddAccionModal(true)}
-            className="px-3 py-1.5 bg-[#15803D] hover:bg-[#14532D] text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Nuevo Compromiso</span>
-          </button>
+          {esEditable && (
+            <button
+              onClick={() => setShowAddAccionModal(true)}
+              className="px-3 py-1.5 bg-[#15803D] hover:bg-[#14532D] text-white text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Nuevo Compromiso</span>
+            </button>
+          )}
         </div>
 
         <div className="overflow-x-auto">
