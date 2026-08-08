@@ -196,6 +196,7 @@ export interface ConsumoMensual {
   sku_id: string;
   periodo: string;
   cantidad: number;
+  zona_id?: string;
 }
 
 export interface ToneladasFruta {

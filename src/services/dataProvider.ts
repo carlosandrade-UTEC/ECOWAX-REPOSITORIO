@@ -57,7 +57,7 @@ export interface DataProvider {
   closeRevision(reviewId: string): Promise<{ success: boolean; pendingDecisions?: string[] }>;
   addAccionRevision(accion: Omit<AccionRevision, 'accion_id'>): Promise<AccionRevision>;
   updateAccionRevision(accionId: string, updates: Partial<AccionRevision>): Promise<void>;
-  saveCarga(carga: CargaDatos, issues: IssueCalidad[]): Promise<CargaDatos>;
+  saveCarga(carga: CargaDatos, issues: IssueCalidad[], filasValidasRows?: any[]): Promise<CargaDatos>;
   updateSku(sku: Sku): Promise<Sku>;
   updateProveedor(proveedor: Proveedor): Promise<Proveedor>;
   getPoliticaVersiones(): Promise<PoliticaVersion[]>;

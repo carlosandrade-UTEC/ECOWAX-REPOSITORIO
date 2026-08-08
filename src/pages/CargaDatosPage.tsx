@@ -3,8 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import Papa from 'papaparse';
 import { useAppStore } from '../store/useAppStore';
 import { dataProvider } from '../services/dataProvider';
-import { validarCargaDatos } from '../engine';
-import { CargaDatos, IssueCalidad, Sku } from '../types';
+import { validarCargaDatos, generarClaveIdempotencia, generarUUID } from '../engine';
+import { CargaDatos, IssueCalidad } from '../types';
 import { Unauthorized403 } from './Unauthorized403';
 import {
   UploadCloud,
@@ -15,9 +15,6 @@ import {
   XCircle,
   History,
   FileText,
-  ArrowRight,
-  RefreshCw,
-  Info,
 } from 'lucide-react';
 
 type TablaDestino =
@@ -33,13 +30,13 @@ const TABLAS_CONFIG: Record<
 > = {
   fact_consumo: {
     label: 'Consumo Histórico Mensual (fact_consumo)',
-    cols: ['sku_id', 'periodo', 'cantidad', 'unidad'],
-    ejemplo: { sku_id: 'INS-001', periodo: '2026-08', cantidad: '1250', unidad: 'kg' },
+    cols: ['sku_id', 'periodo', 'cantidad', 'unidad', 'zona_id'],
+    ejemplo: { sku_id: 'INS-001', periodo: '2026-08', cantidad: '1250', unidad: 'kg', zona_id: 'ZONA-1' },
   },
   fact_inventario: {
     label: 'Inventario Disponible (fact_inventario)',
-    cols: ['sku_id', 'periodo', 'inventario_disponible', 'unidad'],
-    ejemplo: { sku_id: 'INS-001', periodo: '2026-08', inventario_disponible: '1380', unidad: 'kg' },
+    cols: ['sku_id', 'periodo', 'inventario_disponible', 'unidad', 'zona_id'],
+    ejemplo: { sku_id: 'INS-001', periodo: '2026-08', inventario_disponible: '1380', unidad: 'kg', zona_id: 'ZONA-1' },
   },
   fact_ordenes_compra: {
     label: 'Órdenes de Compra (fact_ordenes_compra)',
@@ -70,29 +67,29 @@ const TABLAS_CONFIG: Record<
   },
   fact_proyeccion_comercial: {
     label: 'Proyección Comercial (fact_proyeccion_comercial)',
-    cols: ['campania_id', 'sku_id', 'periodo', 'demanda_esperada', 'unidad'],
+    cols: ['campania_id', 'sku_id', 'periodo', 'demanda_esperada', 'unidad', 'zona_id'],
     ejemplo: {
       campania_id: 'CAM-MAN',
       sku_id: 'INS-001',
       periodo: '2026-08',
       demanda_esperada: '1100',
       unidad: 'kg',
+      zona_id: 'ZONA-1',
     },
   },
 };
 
 export function CargaDatosPage() {
-  const navigate = useNavigate();
-  const { getPermiso, skus, proveedores, currentUser } = useAppStore();
+  const { getPermiso, skus, proveedores, currentUser, loadInitialData } = useAppStore();
   const permiso = getPermiso('carga_datos');
 
   const [tabla, setTabla] = React.useState<TablaDestino>('fact_consumo');
   const [file, setFile] = React.useState<File | null>(null);
   const [dragActive, setDragActive] = React.useState(false);
   const [parsedRows, setParsedRows] = React.useState<any[]>([]);
+  const [parserErrors, setParserErrors] = React.useState<any[]>([]);
   const [issues, setIssues] = React.useState<IssueCalidad[]>([]);
   const [cargas, setCargas] = React.useState<CargaDatos[]>([]);
-  const [loadingValidation, setLoadingValidation] = React.useState(false);
 
   const cargarBitacora = React.useCallback(async () => {
     const list = await dataProvider.getCargas();
@@ -107,7 +104,6 @@ export function CargaDatosPage() {
     return <Unauthorized403 />;
   }
 
-  // Descargar Plantilla CSV
   const handleDescargarPlantilla = () => {
     const cfg = TABLAS_CONFIG[tabla];
     const headers = cfg.cols.join(',');
@@ -122,14 +118,11 @@ export function CargaDatosPage() {
     document.body.removeChild(link);
   };
 
-  // Parser y Validador de las 10 Reglas de Negocio (Engine)
   const procesarArchivo = (fileToParse: File) => {
-    setLoadingValidation(true);
     setFile(fileToParse);
+    const fileName = fileToParse.name.toLowerCase();
 
-    const isJson = fileToParse.name.toLowerCase().endsWith('.json');
-
-    if (isJson) {
+    if (fileName.endsWith('.json')) {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
@@ -137,36 +130,35 @@ export function CargaDatosPage() {
           const parsed = JSON.parse(text);
           const rows = Array.isArray(parsed) ? parsed : parsed.data || [parsed];
           setParsedRows(rows);
-          const valRes = validarCargaDatos(rows, skus, proveedores);
+          setParserErrors([]);
+          const valRes = validarCargaDatos(rows, skus, proveedores, []);
           setIssues(valRes.issues);
         } catch (err: any) {
           alert(`Error al procesar el archivo JSON: ${err.message}`);
-        } finally {
-          setLoadingValidation(false);
         }
       };
       reader.readAsText(fileToParse);
     } else {
+      // Procesa archivos CSV, TXT y TSV
       Papa.parse(fileToParse, {
         header: true,
         skipEmptyLines: true,
         complete: (results) => {
           const rawData = results.data as any[];
+          const pErrors = results.errors || [];
           setParsedRows(rawData);
-          const valRes = validarCargaDatos(rawData, skus, proveedores);
+          setParserErrors(pErrors);
+          const valRes = validarCargaDatos(rawData, skus, proveedores, pErrors);
           setIssues(valRes.issues);
-          setLoadingValidation(false);
         },
         error: (err) => {
-          alert(`Error al leer el archivo CSV: ${err.message}`);
-          setLoadingValidation(false);
+          alert(`Error al leer el archivo: ${err.message}`);
         },
       });
     }
   };
 
-  // Contadores y estado de validación
-  const valResumen = validarCargaDatos(parsedRows, skus, proveedores);
+  const valResumen = validarCargaDatos(parsedRows, skus, proveedores, parserErrors);
   const filasTotales = valResumen.filasTotales;
   const filasRechazadasCount = valResumen.filasConError;
   const filasOkCount = valResumen.filasValidas;
@@ -177,18 +169,28 @@ export function CargaDatosPage() {
   );
 
   const handleConfirmarCarga = async () => {
-    if (filasOkCount === 0) return;
+    if (filasOkCount === 0 || !file) return;
 
-    const newUploadId = `UPL-${Math.floor(1000 + Math.random() * 9000)}`;
+    // Idempotencia de Carga
+    const periodoCarga = parsedRows[0]?.periodo || '2026-08';
+    const idempotenciaKey = generarClaveIdempotencia(file.name, file.size, filasTotales, periodoCarga);
+
+    // Verificar si ya fue cargado previamente con la misma clave de idempotencia
+    const yaExiste = cargas.some((c) => c.upload_id === idempotenciaKey);
+    if (yaExiste) {
+      alert(`[Aviso Idempotencia]: El archivo "${file.name}" ya fue procesado y confirmado previamente (${idempotenciaKey}). Se evita la duplicación de datos.`);
+      return;
+    }
+
     const estadoUpload: CargaDatos['estado'] =
       filasRechazadasCount === 0 ? 'OK' : filasOkCount > 0 ? 'PARCIAL' : 'ERROR';
 
     const nuevaCarga: CargaDatos = {
-      upload_id: newUploadId,
+      upload_id: idempotenciaKey,
       fecha: new Date().toISOString().replace('T', ' ').slice(0, 16),
       usuario_id: currentUser?.usuario_id || 'USR-001',
       tabla_destino: tabla,
-      archivo: file?.name || 'datos.csv',
+      archivo: file.name,
       filas_totales: filasTotales,
       filas_ok: filasOkCount,
       filas_rechazadas: filasRechazadasCount,
@@ -196,13 +198,19 @@ export function CargaDatosPage() {
       detalle:
         filasRechazadasCount > 0
           ? `${filasRechazadasCount} filas rechazadas por reglas bloqueantes.`
-          : 'Carga completa procesada exitosamente.',
+          : 'Carga completa procesada y sincronizada exitosamente.',
     };
 
-    const finalIssues = issues.map((i) => ({ ...i, upload_id: newUploadId }));
-    await dataProvider.saveCarga(nuevaCarga, finalIssues);
+    // Extraer únicamente filas válidas que no están en el conjunto de rechazadas
+    const filasValidasRows = parsedRows.filter((_, idx) => !filasBloqueantesIndices.has(idx + 1));
 
-    alert(`¡Carga ${newUploadId} confirmada exitosamente con ${filasOkCount} filas procesadas!`);
+    const finalIssues = issues.map((i) => ({ ...i, upload_id: idempotenciaKey }));
+    await dataProvider.saveCarga(nuevaCarga, finalIssues, filasValidasRows);
+
+    // Recargar estado global para actualizar alertas, ROP y proyecciones en toda la app
+    await loadInitialData();
+
+    alert(`¡Carga confirmada exitosamente (${idempotenciaKey})! ${filasOkCount} filas han alimentado activamente el sistema.`);
     setFile(null);
     setParsedRows([]);
     setIssues([]);
@@ -283,12 +291,12 @@ export function CargaDatosPage() {
             Arrastra tu archivo CSV o Excel aquí, o haz clic para examinar
           </p>
           <p className="text-[11px] text-slate-500 mt-1">
-            Formatos soportados: .csv, .txt (Delimitado por comas)
+            Formatos soportados: .csv, .xlsx, .txt, .json
           </p>
 
           <input
             type="file"
-            accept=".csv, .txt"
+            accept=".csv, .xlsx, .xls, .txt, .json"
             onChange={(e) => {
               if (e.target.files && e.target.files[0]) {
                 procesarArchivo(e.target.files[0]);
@@ -316,7 +324,6 @@ export function CargaDatosPage() {
       {/* Resultados de Validación e Previsualización Obligatoria */}
       {parsedRows.length > 0 && (
         <div className="space-y-6">
-          {/* Tarjetas de Resumen de Calidad */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
               <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
@@ -485,7 +492,7 @@ export function CargaDatosPage() {
                 <span>
                   {tieneErroresBloqueantes
                     ? 'Confirmación Bloqueada por Errores'
-                    : `Confirmar Carga (${filasOkCount} Filas Válidas)`}
+                    : `Confirmar e Integrar (${filasOkCount} Filas Válidas)`}
                 </span>
               </button>
             </div>
@@ -507,7 +514,7 @@ export function CargaDatosPage() {
           <table className="w-full text-left text-xs">
             <thead className="bg-slate-100 text-slate-600 uppercase font-bold text-[10px] border-b border-slate-200">
               <tr>
-                <th className="px-3.5 py-2.5">ID Carga</th>
+                <th className="px-3.5 py-2.5">ID Carga (Idempotencia)</th>
                 <th className="px-3.5 py-2.5">Fecha</th>
                 <th className="px-3.5 py-2.5">Usuario</th>
                 <th className="px-3.5 py-2.5">Tabla Destino</th>

@@ -180,8 +180,8 @@ export const sheetsProvider: DataProvider = {
     requestApi<AccionRevision>('addAccionRevision', { method: 'POST', body: accion, useFallbackOnFail: true }),
   updateAccionRevision: (accionId: string, updates: Partial<AccionRevision>) =>
     requestApi<void>('updateAccionRevision', { method: 'POST', body: { accionId, updates }, useFallbackOnFail: true }),
-  saveCarga: (carga: CargaDatos, issues: IssueCalidad[]) =>
-    requestApi<CargaDatos>('saveCarga', { method: 'POST', body: { carga, issues }, useFallbackOnFail: true }),
+  saveCarga: (carga: CargaDatos, issues: IssueCalidad[], filasValidasRows?: any[]) =>
+    requestApi<CargaDatos>('saveCarga', { method: 'POST', body: { carga, issues, filasValidasRows }, useFallbackOnFail: true }),
   updateSku: (sku: Sku) =>
     requestApi<Sku>('updateSku', { method: 'POST', body: sku, useFallbackOnFail: true }),
   updateProveedor: (proveedor: Proveedor) =>

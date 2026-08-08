@@ -74,6 +74,15 @@ export function Inicio() {
           </p>
         </div>
         <div className="flex items-center space-x-2">
+          <a
+            href="/presentacion.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center space-x-1.5 cursor-pointer"
+          >
+            <span>Ver Presentación ECOWAX</span>
+            <ChevronRight className="w-4 h-4" />
+          </a>
           <button
             onClick={() => navigate('/dashboard')}
             className="px-4 py-2 bg-[#15803D] hover:bg-[#14532D] text-white text-xs font-semibold rounded-lg shadow-sm transition-all flex items-center space-x-1.5 cursor-pointer"

@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECOWAX — Demand & Supply Intelligence | Presentación del Proyecto</title>
+  <meta name="description" content="Presentación executive del Sistema de Recomendación de Abastecimiento (SRA) ECOWAX para ECOPROA E.I.R.L. MBA UTEC Product Management.">
+  
+  <!-- Fonts Google -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    /* ==========================================================================
+       DESIGN SYSTEM & VARIABLES
+       ========================================================================== */
+    :root {
+      --bg-main: #090d16;
+      --bg-card: rgba(15, 23, 42, 0.75);
+      --bg-card-hover: rgba(30, 41, 59, 0.85);
+      --bg-surface: #0f172a;
+      --bg-input: #1e293b;
+      
+      --accent-primary: #10b981;
+      --accent-primary-hover: #059669;
+      --accent-glow: rgba(16, 185, 129, 0.25);
+      --accent-cyan: #06b6d4;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-purple: #8b5cf6;
+
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-bright: rgba(16, 185, 129, 0.3);
+
+      --font-heading: 'Outfit', sans-serif;
+      --font-body: 'Plus Jakarta Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+
+      --shadow-lg: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+      --shadow-glow: 0 0 30px rgba(16, 185, 129, 0.15);
+    }
+
+    [data-theme="light"] {
+      --bg-main: #f8fafc;
+      --bg-card: rgba(255, 255, 255, 0.9);
+      --bg-card-hover: #ffffff;
+      --bg-surface: #ffffff;
+      --bg-input: #f1f5f9;
+
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+
+      --border-color: rgba(0, 0, 0, 0.08);
+      --border-bright: rgba(16, 185, 129, 0.5);
+
+      --shadow-lg: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+      --shadow-glow: 0 0 20px rgba(16, 185, 129, 0.1);
+    }
+
+    /* Reset & Core Styles */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--text-main);
+    }
+
+    p {
+      color: var(--text-muted);
+    }
+
+    a {
+      color: var(--accent-primary);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    a:hover {
+      color: var(--accent-cyan);
+    }
+
+    code, pre {
+      font-family: var(--font-mono);
+    }
+
+    /* Demo Banner Required Rule */
+    .demo-strip {
+      background: linear-gradient(90deg, #b91c1c, #dc2626, #b91c1c);
+      color: #ffffff;
+      text-align: center;
+      padding: 8px 16px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .demo-strip i {
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.1); }
+    }
+
+    /* Top Navigation Header */
+    header {
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 37px;
+      z-index: 999;
+      transition: all 0.3s ease;
+    }
+
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.35rem;
+      font-weight: 800;
+      font-family: var(--font-heading);
+      letter-spacing: -0.5px;
+    }
+
+    .brand-logo i {
+      color: var(--accent-primary);
+      font-size: 1.6rem;
+    }
+
+    .brand-logo span.highlight {
+      color: var(--accent-primary);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      transition: all 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-primary), #059669);
+      color: #ffffff;
+      box-shadow: 0 4px 15px var(--accent-glow);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+      color: #ffffff;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--border-bright);
+    }
+
+    /* Container Utility */
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      padding: 80px 0 60px 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 48px;
+      align-items: center;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 50px;
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid var(--border-bright);
+      color: var(--accent-primary);
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .hero-title {
+      font-size: 3.2rem;
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #ffffff 30%, var(--accent-primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      line-height: 1.7;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .hero-image-wrapper {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg), var(--shadow-glow);
+      border: 1px solid var(--border-bright);
+    }
+
+    .hero-image-wrapper img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .hero-image-wrapper:hover img {
+      transform: scale(1.02);
+    }
+
+    /* Key Numbers Bar */
+    .stats-bar {
+      margin-top: 60px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .stat-card:hover {
+      border-color: var(--border-bright);
+      transform: translateY(-4px);
+    }
+
+    .stat-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      font-family: var(--font-heading);
+      color: var(--accent-primary);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Section Component */
+    .section {
+      padding: 90px 0;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 60px auto;
+    }
+
+    .section-tag {
+      color: var(--accent-primary);
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .section-title {
+      font-size: 2.3rem;
+      margin-bottom: 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .section-desc {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+    }
+
+    /* Process Workflow Cycle (Dato -> Indicador -> Alerta -> Recomendación -> Decisión -> Resultado) */
+    .cycle-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .cycle-stepper {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 992px) {
+      .cycle-stepper {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .hero-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .cycle-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .cycle-step.active {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: var(--accent-primary);
+      box-shadow: var(--shadow-glow);
+    }
+
+    .cycle-step-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px auto;
+      color: var(--accent-primary);
+      font-size: 1.2rem;
+    }
+
+    .cycle-step.active .cycle-step-icon {
+      background: var(--accent-primary);
+      color: #ffffff;
+    }
+
+    .cycle-step-num {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      text-transform: uppercase;
+    }
+
+    .cycle-step-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-top: 4px;
+    }
+
+    .cycle-detail-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-lg);
+      padding: 32px;
+      box-shadow: var(--shadow-lg);
+      margin-top: 20px;
+    }
+
+    .cycle-detail-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .cycle-detail-header h3 {
+      font-size: 1.6rem;
+      color: var(--accent-primary);
+    }
+
+    /* Non-Negotiable Architecture Cards */
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    @media (max-width: 900px) {
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .rule-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .rule-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent-primary);
+    }
+
+    .rule-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-bright);
+      background: var(--bg-card-hover);
+    }
+
+    .rule-card i {
+      font-size: 1.8rem;
+      color: var(--accent-primary);
+      margin-bottom: 16px;
+    }
+
+    .rule-card h4 {
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+
+    /* KPI Interactive Simulator */
+    .calculator-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+    }
+
+    @media (max-width: 900px) {
+      .calc-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .calc-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .form-control {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent-primary);
+    }
+
+    .calc-results {
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      border: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .result-row:last-child {
+      border-bottom: none;
+    }
+
+    .result-label {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+    }
+
+    .result-value {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--accent-primary);
+    }
+
+    .alert-badge-preview {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .alert-critical {
+      background: rgba(244, 63, 94, 0.2);
+      color: #f43f5e;
+      border: 1px solid rgba(244, 63, 94, 0.4);
+    }
+
+    .alert-warning {
+      background: rgba(245, 158, 11, 0.2);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.4);
+    }
+
+    .alert-ok {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    /* Modules List & Tech Stack */
+    .modules-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .module-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: all 0.25s;
+    }
+
+    .module-card:hover {
+      border-color: var(--border-bright);
+      transform: translateX(4px);
+    }
+
+    .module-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-sm);
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--accent-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .module-info h5 {
+      font-size: 1rem;
+      margin-bottom: 4px;
+    }
+
+    .module-info p {
+      font-size: 0.82rem;
+    }
+
+    /* Case Study Card (Carnauba T1) */
+    .case-study-box {
+      background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(6, 78, 59, 0.3));
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    @media (max-width: 900px) {
+      .case-study-box {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .formula-badge {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 16px;
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--accent-cyan);
+      font-family: var(--font-mono);
+      font-size: 0.88rem;
+      color: #38bdf8;
+      margin-top: 14px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 40px 0;
+      text-align: center;
+      background: var(--bg-main);
+    }
+
+    .footer-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .footer-meta {
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+
+    /* Responsive Utilities & Print Styles */
+    @media print {
+      .demo-strip, header, .hero-cta, .btn, #theme-toggle {
+        display: none !important;
+      }
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+      .section {
+        padding: 30px 0 !important;
+      }
+      .stat-card, .rule-card, .calculator-container {
+        border: 1px solid #cccccc !important;
+        box-shadow: none !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- BANDA OBLIGATORIA DE MODO DEMOSTRACIÓN -->
+  <div class="demo-strip">
+    <i class="fa-solid fa-triangle-exclamation"></i>
+    <span>MODO DEMOSTRACIÓN — DATOS SINTÉTICOS Y SIMULACIÓN OPERATIVA ECOWAX DSI</span>
+    <i class="fa-solid fa-triangle-exclamation"></i>
+  </div>
+
+  <!-- HEADER DE NAVEGACIÓN -->
+  <header>
+    <div class="nav-container">
+      <div class="brand-logo">
+        <i class="fa-solid fa-leaf"></i>
+        <span>ECO<span class="highlight">WAX</span> DSI</span>
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="#vision">Visión</a></li>
+        <li><a href="#ciclo">Ciclo Inviolable</a></li>
+        <li><a href="#reglas">Reglas Engine</a></li>
+        <li><a href="#calculadora">Calculadora KPI</a></li>
+        <li><a href="#caso">Caso INS-001</a></li>
+        <li><a href="#modulos">Módulos</a></li>
+        <li><a href="#impacto">Impacto ROI</a></li>
+      </ul>
+
+      <div class="header-actions">
+        <button class="btn btn-secondary" id="theme-toggle" title="Cambiar Tema Oscuro/Claro">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+        <button class="btn btn-secondary" onclick="window.print()" title="Imprimir o Guardar Ficha PDF">
+          <i class="fa-solid fa-print"></i> PDF
+        </button>
+        <a href="index.html" class="btn btn-primary" target="_blank" title="Abrir Aplicación Interactiva SRA">
+          <i class="fa-solid fa-rocket"></i> Abrir SRA Live
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero-section" id="vision">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="badge-pill">
+            <i class="fa-solid fa-shield-halved"></i> ECOPROA E.I.R.L. | MBA UTEC Product Management
+          </div>
+          <h1 class="hero-title">
+            Demand & Supply Intelligence
+          </h1>
+          <p class="hero-subtitle">
+            Sistema de Recomendación de Abastecimiento (SRA) determinístico para la decisión de compra de insumos químicos críticos importados. No es un dashboard pasivo; es un motor de gobernanza y decisión auditada.
+          </p>
+
+          <div class="hero-cta">
+            <a href="index.html" class="btn btn-primary">
+              <i class="fa-solid fa-play"></i> Probar Prototipo Interactivo
+            </a>
+            <a href="#ciclo" class="btn btn-secondary">
+              <i class="fa-solid fa-diagram-project"></i> Ver Ciclo de Decisión
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-image-wrapper">
+          <img src="assets/ecowax_hero_banner.png" alt="ECOWAX Demand and Supply Intelligence Banner" id="hero-img">
+        </div>
+      </div>
+
+      <!-- STATS & METRICS -->
+      <div class="stats-bar">
+        <div class="stat-card">
+          <div class="stat-number">60-90 días</div>
+          <div class="stat-label">Lead Time Importación Crítica</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Trazabilidad Inmutable SOX</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">0%</div>
+          <div class="stat-label">Auto-Emisión (Decisión Humana)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">RULES_v1.0</div>
+          <div class="stat-label">Motor de Cálculo Determinístico</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN: EL CICLO INVIOLABLE DE DECISIÓN -->
+  <section class="section" id="ciclo">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Metodología de Gobernanza</span>
+        <h2 class="section-title">El Ciclo Inviolable de Decisión</h2>
+        <p class="section-desc">
+          En ECOWAX, un dato aislado no genera valor. Transformamos los insumos operativos en decisiones humanas auditables mediante una secuencia estricta.
+        </p>
+      </div>
+
+      <div class="cycle-wrapper">
+        <div class="cycle-stepper">
+          <div class="cycle-step active" onclick="selectCycleStep(1)">
+            <div class="cycle-step-icon"><i class="fa-solid fa-database"></i></div>
+            <div class="cycle-step-num">Paso 01</div>
+            <div class="cycle-step-title">Dato</div>
+          </div>
+          <div class="cycle-step" onclick="selectCycleStep(2)">
+            <div class="cycle-step-icon"><i class="fa-solid fa-chart-line"></i></div>
+            <div class="cycle-step-num">Paso 02</div>
+            <div class="cycle-step-title">Indicador</div>
+          </div>
+          <div class="cycle-step" onclick="selectCycleStep(3)">
+            <div class="cycle-step-icon"><i class="fa-solid fa-bell"></i></div>
+            <div class="cycle-step-num">Paso 03</div>
+            <div class="cycle-step-title">Alerta</div>
+          </div>
+          <div class="cycle-step" onclick="selectCycleStep(4)">
+            <div class="cycle-step-icon"><i class="fa-solid fa-lightbulb"></i></div>
+            <div class="cycle-step-num">Paso 04</div>
+            <div class="cycle-step-title">Recomendación</div>
+          </div>
+          <div class="cycle-step" onclick="selectCycleStep(5)">
+            <div class="cycle-step-icon"><i class="fa-solid fa-user-check"></i></div>
+            <div class="cycle-step-num">Paso 05</div>
+            <div class="cycle-step-title">Decisión Humana</div>
+          </div>
+          <div class="cycle-step" onclick="selectCycleStep(6)">
+            <div class="cycle-step-icon"><i class="fa-solid fa-square-check"></i></div>
+            <div class="cycle-step-num">Paso 06</div>
+            <div class="cycle-step-title">Resultado Medido</div>
+          </div>
+        </div>
+
+        <div class="cycle-detail-box" id="cycle-display">
+          <!-- Injected via JavaScript -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN: REGLAS DE ARQUITECTURA NO NEGOCIABLES -->
+  <section class="section" id="reglas">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Principios de Ingeniería</span>
+        <h2 class="section-title">Reglas de Arquitectura No Negociables</h2>
+        <p class="section-desc">
+          Lógicas garantizadas a nivel de código para asegurar rigor SOX, reproducibilidad y confiabilidad en la cadena de suministro.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <div class="rule-card">
+          <i class="fa-solid fa-calculator"></i>
+          <h4>1. Cálculo Aislado en Engine</h4>
+          <p>
+            Toda fórmula de negocio reside exclusivamente en <code>src/engine/</code> como funciones puras y determinísticas. Ningún componente React realiza cálculos directos.
+          </p>
+        </div>
+
+        <div class="rule-card">
+          <i class="fa-solid fa-plug"></i>
+          <h4>2. Interfaz DataProvider</h4>
+          <p>
+            Desacoplamiento total entre la UI y la fuente de datos. Se conmuta de forma transparente entre datos simulados (<code>MockProvider</code>) y Google Sheets Apps Script API.
+          </p>
+        </div>
+
+        <div class="rule-card">
+          <i class="fa-solid fa-file-shield"></i>
+          <h4>3. Bitácora de Auditoría Inmutable</h4>
+          <p>
+            Toda acción de modificación genera una fila en <code>app_auditoria</code> especificando timestamp, usuario, entidad, valor anterior, nuevo valor, motivo y versión de regla.
+          </p>
+        </div>
+
+        <div class="rule-card">
+          <i class="fa-solid fa-trash-can-arrow-up"></i>
+          <h4>4. Solo Bajas Lógicas</h4>
+          <p>
+            Está estrictamente prohibido eliminar físicamente registros. La desactivación o retiro de SKUs, usuarios o políticas se realiza cambiando el atributo <code>estado</code>.
+          </p>
+        </div>
+
+        <div class="rule-card">
+          <i class="fa-solid fa-code-version"></i>
+          <h4>5. Control Versión de Reglas</h4>
+          <p>
+            Cualquier modificación en las fórmulas de cálculo obliga al incremento de <code>RULES_VERSION</code> en <code>src/engine/version.ts</code> para trazabilidad histórica.
+          </p>
+        </div>
+
+        <div class="rule-card">
+          <i class="fa-solid fa-hand-holding-hand"></i>
+          <h4>6. Recomendador, No Automatizador</h4>
+          <p>
+            La aplicación NUNCA emite una Orden de Compra (OC) de forma autónoma. Sugiere parámetros y registra formalmente la aprobación o ajuste del Planner.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN: CALCULADORA INTERACTIVA DE KPIS -->
+  <section class="section" id="calculadora">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Simulador en Tiempo Real</span>
+        <h2 class="section-title">Calculadora de KPIs de Abastecimiento</h2>
+        <p class="section-desc">
+          Pruebe el motor de cálculo probabilístico e ingrese parámetros para verificar Posición de Inventario, Cobertura Estacional, Fill Rate y OTIF.
+        </p>
+      </div>
+
+      <div class="calculator-container">
+        <div class="calc-grid">
+          <div class="calc-inputs">
+            <h4 style="margin-bottom: 12px; color: var(--accent-primary);"><i class="fa-solid fa-sliders"></i> Variables de Entrada (Insumo)</h4>
+            
+            <div class="form-group">
+              <label>Stock Disponible (kg) <span id="val-disp">12,500</span></label>
+              <input type="range" class="form-control" id="input-disp" min="0" max="50000" step="500" value="12500" oninput="calculateKpis()">
+            </div>
+
+            <div class="form-group">
+              <label>Stock Comprometido (kg) <span id="val-comp">3,200</span></label>
+              <input type="range" class="form-control" id="input-comp" min="0" max="20000" step="200" value="3200" oninput="calculateKpis()">
+            </div>
+
+            <div class="form-group">
+              <label>Stock en Tránsito (kg) <span id="val-trans">8,000</span></label>
+              <input type="range" class="form-control" id="input-trans" min="0" max="30000" step="500" value="8000" oninput="calculateKpis()">
+            </div>
+
+            <div class="form-group">
+              <label>Demanda Estacional Mensual (kg/mes) <span id="val-dem">10,000</span></label>
+              <input type="range" class="form-control" id="input-dem" min="1000" max="40000" step="1000" value="10000" oninput="calculateKpis()">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 8px;">
+              <div class="form-group">
+                <label>OC Solicitado</label>
+                <input type="number" class="form-control" id="input-sol" value="5000" onchange="calculateKpis()">
+              </div>
+              <div class="form-group">
+                <label>OC Recibido</label>
+                <input type="number" class="form-control" id="input-rec" value="4800" onchange="calculateKpis()">
+              </div>
+              <div class="form-group">
+                <label>Días Retraso</label>
+                <input type="number" class="form-control" id="input-ret" value="0" onchange="calculateKpis()">
+              </div>
+            </div>
+          </div>
+
+          <div class="calc-results">
+            <h4 style="margin-bottom: 16px; color: var(--text-main);"><i class="fa-solid fa-square-poll-vertical"></i> Indicadores Calculados por Engine</h4>
+
+            <div class="result-row">
+              <span class="result-label">Posición de Inventario</span>
+              <span class="result-value" id="res-pos">17,300 kg</span>
+            </div>
+
+            <div class="result-row">
+              <span class="result-label">Cobertura Estacional Estimada</span>
+              <span class="result-value" id="res-cob">51.9 días</span>
+            </div>
+
+            <div class="result-row">
+              <span class="result-label">Fill Rate de Proveedor</span>
+              <span class="result-value" id="res-fr">96.0%</span>
+            </div>
+
+            <div class="result-row">
+              <span class="result-label">Evaluación OTIF (On-Time In-Full)</span>
+              <span class="result-value" id="res-otif" style="color: var(--accent-amber);">INCOMPLETO</span>
+            </div>
+
+            <div class="result-row" style="padding-top: 16px;">
+              <span class="result-label">Estado de Alerta de Stock</span>
+              <div id="res-badge">
+                <span class="alert-badge-preview alert-ok"><i class="fa-solid fa-circle-check"></i> NORMAL</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN: CASO DE ESTUDIO DESTACADO (INS-001) -->
+  <section class="section" id="caso">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Análisis Numérico Real</span>
+        <h2 class="section-title">Caso Emblemático: Carnauba T1 (`INS-001`)</h2>
+        <p class="section-desc">
+          Insumo orgánico importado desde Brasil/Asia para el recubrimiento de frutas de exportación.
+        </p>
+      </div>
+
+      <div class="case-study-box">
+        <div>
+          <span class="badge-pill" style="margin-bottom: 12px;"><i class="fa-solid fa-box"></i> SKU Crítico Clasificación A</span>
+          <h3 style="font-size: 1.8rem; margin-bottom: 12px; color: #ffffff;">Cera de Carnauba T1 Importada</h3>
+          <p style="margin-bottom: 16px;">
+            Este insumo sufre de tiempos de tránsito marítimo prolongados (Lead Time de 60 días) y un pico drástico de demanda entre los meses de Agosto y Noviembre debido a la campaña de palta y mango de exportación.
+          </p>
+          <ul style="list-style: none; display: flex; flex-direction: column; gap: 8px; color: var(--text-muted); font-size: 0.92rem;">
+            <li><i class="fa-solid fa-check" style="color: var(--accent-primary);"></i> <strong>Stock de Seguridad (SS):</strong> Calculado con variabilidad de demanda y servicio del 95%.</li>
+            <li><i class="fa-solid fa-check" style="color: var(--accent-primary);"></i> <strong>Punto de Reorden (ROP):</strong> Alerta activada cuando la Posición &le; ROP.</li>
+            <li><i class="fa-solid fa-check" style="color: var(--accent-primary);"></i> <strong>Evaluación Estacional:</strong> La cobertura no se calcula con un promedio anual plano.</li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="formula-badge">
+            <strong>Fórmula de Cobertura Estacional (Engine):</strong><br>
+            \[ Cobertura (días) = \text{Días hasta agotar Stock vs } D_{mes1}, D_{mes2}, ... \]
+          </div>
+          <div class="formula-badge" style="border-left-color: var(--accent-amber); margin-top: 12px;">
+            <strong>Fórmula de OTIF (On-Time In-Full):</strong><br>
+            \[ OTIF = (A\ Tiempo \le 0\ días) \ \land \ (Cantidad\ Recibida == Cantidad\ Solicitada) \]
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN: MÓDULOS DEL SISTEMA Y GOBIERNO SOX -->
+  <section class="section" id="modulos">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Arquitectura Funcional</span>
+        <h2 class="section-title">Mapa de Módulos de la Aplicación</h2>
+        <p class="section-desc">
+          Estructura completa de pantallas implementadas para la gestión de demanda, abastecimiento y gobernanza.
+        </p>
+      </div>
+
+      <div class="modules-grid">
+        <div class="module-card">
+          <div class="module-icon"><i class="fa-solid fa-chart-pie"></i></div>
+          <div class="module-info">
+            <h5>Dashboard Principal</h5>
+            <p>KPIs consolidados, salud de inventario y estado global de alertas.</p>
+          </div>
+        </div>
+
+        <div class="module-card">
+          <div class="module-icon"><i class="fa-solid fa-bell"></i></div>
+          <div class="module-info">
+            <h5>Centro de Alertas</h5>
+            <p>Clasificación por severidad (Crítica, Advertencia, Normal) y atención prioritaria.</p>
+          </div>
+        </div>
+
+        <div class="module-card">
+          <div class="module-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+          <div class="module-info">
+            <h5>Motor de Recomendaciones</h5>
+            <p>Sugerencia de fechas de emisión y cantidades económicas de compra.</p>
+          </div>
+        </div>
+
+        <div class="module-card">
+          <div class="module-icon"><i class="fa-solid fa-warehouse"></i></div>
+          <div class="module-info">
+            <h5>Inventario & Cobertura</h5>
+            <p>Monitoreo de disponible, comprometido, en tránsito y días de stock.</p>
+          </div>
+        </div>
+
+        <div class="module-card">
+          <div class="module-icon"><i class="fa-solid fa-arrow-trend-up"></i></div>
+          <div class="module-info">
+            <h5>Pronóstico de Demanda</h5>
+            <p>Proyección estacional, cálculo de error MAPE y evaluación de sesgo.</p>
+          </div>
+        </div>
+
+        <div class="module-card">
+          <div class="module-icon"><i class="fa-solid fa-file-contract"></i></div>
+          <div class="module-info">
+            <h5>Actas & Revisión Mensual</h5>
+            <p>Registro formal de compromisos del comité de compras S&OP.</p>
+          </div>
+        </div>
+
+        <div class="module-card">
+          <div class="module-icon"><i class="fa-solid fa-shield-cat"></i></div>
+          <div class="module-info">
+            <h5>Auditoría Inmutable</h5>
+            <p>Bitácora de lecturas/escrituras SOX con versión de reglas y justificación.</p>
+          </div>
+        </div>
+
+        <div class="module-card">
+          <div class="module-icon"><i class="fa-solid fa-users-gear"></i></div>
+          <div class="module-info">
+            <h5>Administración RBAC</h5>
+            <p>Gestión de usuarios, permisos por rol y bajas lógicas de cuentas.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECCIÓN: RESULTADOS E IMPACTO DE NEGOCIO (ROI) -->
+  <section class="section" id="impacto">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Retorno de Inversión</span>
+        <h2 class="section-title">Impacto en el Negocio</h2>
+        <p class="section-desc">
+          Beneficios cuantitativos directos sobre el capital de trabajo y el nivel de servicio al cliente.
+        </p>
+      </div>
+
+      <div class="grid-3">
+        <div class="rule-card" style="border-left-color: var(--accent-cyan);">
+          <i class="fa-solid fa-boxes-packing" style="color: var(--accent-cyan);"></i>
+          <h4>-35% Quiebres de Stock</h4>
+          <p>Eliminación de paradas de planta agroindustrial por falta de ceras o aditivos químicos importados durante campañas de exportación.</p>
+        </div>
+
+        <div class="rule-card" style="border-left-color: var(--accent-amber);">
+          <i class="fa-solid fa-coins" style="color: var(--accent-amber);"></i>
+          <h4>-20% Capital Inmovilizado</h4>
+          <p>Optimización del stock de seguridad y fechas de pedido que evitan el exceso de inventario obsoleto o vencido en almacén.</p>
+        </div>
+
+        <div class="rule-card" style="border-left-color: var(--accent-purple);">
+          <i class="fa-solid fa-award" style="color: var(--accent-purple);"></i>
+          <h4>100% Trazabilidad SOX</h4>
+          <p>Aprobación transparente de órdenes de compra con justificación explícita de desviaciones y medición de desempeño OTIF de proveedores.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="container footer-content">
+      <div class="brand-logo">
+        <i class="fa-solid fa-leaf"></i>
+        <span>ECO<span class="highlight">WAX</span> Demand & Supply Intelligence</span>
+      </div>
+      <p style="font-size: 0.9rem; color: var(--text-muted); max-width: 600px;">
+        Producto de datos desarrollado para ECOPROA E.I.R.L. como parte del programa MBA UTEC Product Management.
+      </p>
+      <div class="footer-meta">
+        <span><i class="fa-solid fa-code-branch"></i> Version Engine: RULES_v1.0.0</span> &bull; 
+        <span><i class="fa-solid fa-network-wired"></i> DataProvider: Google Sheets / Mock Sync</span> &bull; 
+        <span>© 2026 ECOPROA E.I.R.L. Todos los derechos reservados.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCRIPT INTERACTIVO Y SIMULADOR -->
+  <script>
+    // Theme Switcher
+    const themeToggle = document.getElementById('theme-toggle');
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.body.getAttribute('data-theme');
+      if (currentTheme === 'light') {
+        document.body.removeAttribute('data-theme');
+        themeToggle.innerHTML = '<i class="fa-solid fa-moon"></i>';
+      } else {
+        document.body.setAttribute('data-theme', 'light');
+        themeToggle.innerHTML = '<i class="fa-solid fa-sun"></i>';
+      }
+    });
+
+    // Step cycle data
+    const cycleData = {
+      1: {
+        title: "01. Ingesta de Datos Operativos",
+        icon: "fa-database",
+        desc: "El sistema consume automáticamente los saldos de almacén (disponible, comprometido por órdenes de producción) y embarques confirmados en tránsito vía la interfaz DataProvider desde Google Sheets o el Mock Semilla.",
+        detail: "Garantiza que la información de entrada esté limpia, validada y con marcas de tiempo legibles sin intervención manual."
+      },
+      2: {
+        title: "02. Cálculo Determinístico de Indicadores",
+        icon: "fa-chart-line",
+        desc: "Las funciones puras en `src/engine/` calculan la Posición de Inventario REAL, la Cobertura Estacional proyectada mes a mes, el Fill Rate histórico y el indicador OTIF.",
+        detail: "Fórmula clave: Posición de Inventario = Disponible - Comprometido + En Tránsito."
+      },
+      3: {
+        title: "03. Generación y Clasificación de Alertas",
+        icon: "fa-bell",
+        desc: "Evaluación continua de la posición contra el Punto de Reorden (ROP). Si la posición es inferior o igual al ROP, el sistema genera inmediatamente una alerta de prioridad Crítica o Advertencia.",
+        detail: "Permite priorizar la atención en los insumos verdaderamente en riesgo antes de que se produzca un desabastecimiento."
+      },
+      4: {
+        title: "04. Recomendación de Abastecimiento",
+        icon: "fa-lightbulb",
+        desc: "El motor genera una sugerencia con la fecha exacta recomendada para emitir la Orden de Compra (OC) y la Cantidad Económica Sugerida para mantener la cobertura meta.",
+        detail: "Sugerencia basada en tiempos de tránsito reales (Lead Time de 60 a 90 días)."
+      },
+      5: {
+        title: "05. Decisión Humana y Gobernanza (S&OP)",
+        icon: "fa-user-check",
+        desc: "REGLA CLAVE: La aplicación NUNCA emite una OC de forma autónoma. El Planner de Compras revisa la recomendación, ajusta si hay variables cualitativas y aprueba la decisión dejando motivo explícito.",
+        detail: "Toda decisión humana aprobada o rechazada queda formalizada y firmada digitalmente."
+      },
+      6: {
+        title: "06. Registro Auditado y Resultado Medido",
+        icon: "fa-square-check",
+        desc: "La decisión genera un evento inalterable en `app_auditoria` con timestamp, usuario, versión de reglas (`RULES_VERSION`) y posteriormente mide el Fill Rate y OTIF real entregado por el proveedor.",
+        detail: "Cierra el ciclo completo desde el dato inicial hasta la medición del desempeño logístico."
+      }
+    };
+
+    function selectCycleStep(stepNum) {
+      const steps = document.querySelectorAll('.cycle-step');
+      steps.forEach((s, idx) => {
+        if (idx + 1 === stepNum) {
+          s.classList.add('active');
+        } else {
+          s.classList.remove('active');
+        }
+      });
+
+      const data = cycleData[stepNum];
+      const display = document.getElementById('cycle-display');
+      display.innerHTML = `
+        <div class="cycle-detail-header">
+          <div class="cycle-step-icon" style="width: 50px; height: 50px; font-size: 1.5rem; background: var(--accent-primary); color: #fff;">
+            <i class="fa-solid ${data.icon}"></i>
+          </div>
+          <div>
+            <h3>${data.title}</h3>
+            <span style="font-size: 0.85rem; color: var(--text-dim); text-transform: uppercase; font-weight: 700;">Etapa ${stepNum} del Ciclo ECOWAX</span>
+          </div>
+        </div>
+        <p style="font-size: 1.05rem; margin-bottom: 16px; color: var(--text-main);">${data.desc}</p>
+        <div style="background: rgba(0,0,0,0.2); padding: 14px 20px; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-cyan); font-size: 0.9rem; color: var(--text-muted);">
+          <i class="fa-solid fa-circle-info" style="color: var(--accent-cyan); margin-right: 6px;"></i> ${data.detail}
+        </div>
+      `;
+    }
+
+    // Initialize step 1
+    selectCycleStep(1);
+
+    // KPI Calculator JavaScript Logic
+    function calculateKpis() {
+      const disp = parseFloat(document.getElementById('input-disp').value) || 0;
+      const comp = parseFloat(document.getElementById('input-comp').value) || 0;
+      const trans = parseFloat(document.getElementById('input-trans').value) || 0;
+      const dem = parseFloat(document.getElementById('input-dem').value) || 1;
+      const sol = parseFloat(document.getElementById('input-sol').value) || 1;
+      const rec = parseFloat(document.getElementById('input-rec').value) || 0;
+      const ret = parseFloat(document.getElementById('input-ret').value) || 0;
+
+      // Update Slider labels
+      document.getElementById('val-disp').innerText = disp.toLocaleString() + ' kg';
+      document.getElementById('val-comp').innerText = comp.toLocaleString() + ' kg';
+      document.getElementById('val-trans').innerText = trans.toLocaleString() + ' kg';
+      document.getElementById('val-dem').innerText = dem.toLocaleString() + ' kg/mes';
+
+      // Posición de Inventario = Disponible - Comprometido + En Tránsito
+      const posicion = disp - comp + trans;
+      document.getElementById('res-pos').innerText = posicion.toLocaleString() + ' kg';
+
+      // Cobertura en Días = (Posición / Demanda Mensual) * 30
+      const coberturaDias = Math.max(0, (posicion / dem) * 30);
+      document.getElementById('res-cob').innerText = coberturaDias.toFixed(1) + ' días';
+
+      // Fill Rate = (Recibido / Solicitado) * 100
+      const fillRate = Math.min(100, Math.max(0, (rec / sol) * 100));
+      document.getElementById('res-fr').innerText = fillRate.toFixed(1) + '%';
+
+      // OTIF = On Time (Retraso <= 0) AND In Full (Recibido >= Solicitado)
+      const isOnTime = ret <= 0;
+      const isInFull = rec >= sol;
+      const isOtif = isOnTime && isInFull;
+
+      const otifElem = document.getElementById('res-otif');
+      if (isOtif) {
+        otifElem.innerText = 'CUMPLIDO (OTIF 100%)';
+        otifElem.style.color = 'var(--accent-primary)';
+      } else {
+        let razon = [];
+        if (!isOnTime) razon.push(`Retraso ${ret}d`);
+        if (!isInFull) razon.push(`Faltante ${sol - rec}kg`);
+        otifElem.innerText = `INCUMPLIDO (${razon.join(', ')})`;
+        otifElem.style.color = 'var(--accent-rose)';
+      }
+
+      // Alert Badge logic
+      const badgeElem = document.getElementById('res-badge');
+      if (coberturaDias < 20) {
+        badgeElem.innerHTML = '<span class="alert-badge-preview alert-critical"><i class="fa-solid fa-triangle-exclamation"></i> CRÍTICO (&lt;20d)</span>';
+      } else if (coberturaDias < 45) {
+        badgeElem.innerHTML = '<span class="alert-badge-preview alert-warning"><i class="fa-solid fa-circle-exclamation"></i> ADVERTENCIA (&lt;45d)</span>';
+      } else {
+        badgeElem.innerHTML = '<span class="alert-badge-preview alert-ok"><i class="fa-solid fa-circle-check"></i> NORMAL (&gt;45d)</span>';
+      }
+    }
+
+    // Run initial calculation
+    calculateKpis();
+  </script>
+</body>
+</html>

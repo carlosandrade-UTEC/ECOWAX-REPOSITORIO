@@ -1,5 +1,6 @@
 import { ReordenCalculado, Criticidad } from '../types';
 import { RULES_VERSION } from './version';
+import { getSystemDate } from './clock';
 
 export function obtenerZScore(nivelServicio: number): number {
   if (nivelServicio >= 0.98) return 2.05;
@@ -15,11 +16,18 @@ export function calcularPosicionInventario(
   return disponibilidad - comprometido + enTransito;
 }
 
+/**
+ * REGLA DE DOMINIO: El Lead Time no puede ser negativo.
+ * Si se recibe un Lead Time < 0, se lanza una excepción explícita.
+ */
 export function calcularStockSeguridad(
   zScore: number,
   sigmaConsumoDiario: number,
   leadTimeDias: number
 ): number {
+  if (leadTimeDias < 0) {
+    throw new Error(`Lead Time inválido (${leadTimeDias} días). El Lead Time no puede ser negativo.`);
+  }
   const ss = zScore * sigmaConsumoDiario * Math.sqrt(leadTimeDias);
   return Number(ss.toFixed(1));
 }
@@ -29,6 +37,9 @@ export function calcularPuntoReorden(
   leadTimeDias: number,
   stockSeguridad: number
 ): number {
+  if (leadTimeDias < 0) {
+    throw new Error(`Lead Time inválido (${leadTimeDias} días). El Lead Time no puede ser negativo.`);
+  }
   const rop = consumoPromedioDiario * leadTimeDias + stockSeguridad;
   return Number(rop.toFixed(1));
 }
@@ -190,11 +201,12 @@ export function detectarYFiltrarAtipicos(
 }
 
 /**
- * Suma días de cobertura a fecha base
+ * Suma días de cobertura a la fecha de corte dinámica del sistema
  */
-export function calcularFechaQuiebre(diasCobertura: number, fechaBaseIso: string = '2026-08-06'): string {
-  if (diasCobertura <= 0) return fechaBaseIso;
-  const fecha = new Date(fechaBaseIso);
+export function calcularFechaQuiebre(diasCobertura: number, fechaBaseIso?: string): string {
+  const baseIso = fechaBaseIso || getSystemDate();
+  if (diasCobertura <= 0) return baseIso;
+  const fecha = new Date(baseIso);
   fecha.setDate(fecha.getDate() + diasCobertura);
   return fecha.toISOString().split('T')[0];
 }
@@ -212,6 +224,7 @@ export function evaluarPuntoReorden(
   claseAbc: 'A' | 'B' | 'C'
 ): ReordenCalculado {
   const posicion = calcularPosicionInventario(disponible, comprometido, enTransito);
+  const hoyStr = getSystemDate();
 
   if (consumoPromDiario <= 0) {
     return {
@@ -227,7 +240,7 @@ export function evaluarPuntoReorden(
       inventario_transito: enTransito,
       posicion_inventario: posicion,
       cobertura_actual_dias: 0,
-      fecha_estimada_quiebre: '2026-08-06',
+      fecha_estimada_quiebre: hoyStr,
       version_regla: RULES_VERSION,
     };
   }
@@ -236,7 +249,7 @@ export function evaluarPuntoReorden(
   const ss = calcularStockSeguridad(z, desvStdConsumoDiario, leadTimeDias);
   const rop = calcularPuntoReorden(consumoPromDiario, leadTimeDias, ss);
   const cob = coberturaDias(demandaMensualFutura, posicion);
-  const fechaQuiebre = calcularFechaQuiebre(cob, '2026-08-06');
+  const fechaQuiebre = calcularFechaQuiebre(cob, hoyStr);
 
   return {
     sku_id: skuId,

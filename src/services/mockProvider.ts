@@ -1,6 +1,9 @@
 import { DataProvider } from './dataProvider';
 import { SEED_DATA_RAW, expandir } from '../data/seed';
 import { RULES_VERSION } from '../engine/version';
+import { generarUUID } from '../engine/id';
+import { evaluarPuntoReorden } from '../engine/inventario';
+import { getSystemDate } from '../engine/clock';
 import {
   Sku,
   Proveedor,
@@ -28,9 +31,11 @@ import {
   PermisosMapa,
 } from '../types';
 
-function delay(ms: number = 250): Promise<void> {
+function delay(ms: number = 150): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
+
+const STORAGE_KEY = 'ECOWAX_MOCK_STATE_V1';
 
 class MockDataProvider implements DataProvider {
   private skus: Sku[];
@@ -59,14 +64,49 @@ class MockDataProvider implements DataProvider {
   private permisos: PermisosMapa;
 
   constructor() {
+    // Intentar recuperar estado previo guardado en localStorage para persistencia tras F5
+    const stored = typeof localStorage !== 'undefined' ? localStorage.getItem(STORAGE_KEY) : null;
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        this.skus = parsed.skus;
+        this.proveedores = parsed.proveedores;
+        this.zonas = parsed.zonas;
+        this.campanias = parsed.campanias;
+        this.usuarios = parsed.usuarios;
+        this.politica = parsed.politica;
+        this.politicaVersiones = parsed.politicaVersiones;
+        this.sugerencias = parsed.sugerencias;
+        this.umbrales = parsed.umbrales;
+        this.reorden = parsed.reorden;
+        this.proyecciones = parsed.proyecciones;
+        this.alertas = parsed.alertas;
+        this.recomendaciones = parsed.recomendaciones;
+        this.decisiones = parsed.decisiones;
+        this.consumoMensual = parsed.consumoMensual;
+        this.toneladasFruta = parsed.toneladasFruta;
+        this.kpis = parsed.kpis;
+        this.pronosticos = parsed.pronosticos;
+        this.revisiones = parsed.revisiones;
+        this.accionesRevision = parsed.accionesRevision;
+        this.cargas = parsed.cargas;
+        this.calidad = parsed.calidad;
+        this.auditoria = parsed.auditoria;
+        this.permisos = parsed.permisos;
+        return;
+      } catch (e) {
+        console.warn('Falló la recuperación del storage local; inicializando con semillas de fábrica.');
+      }
+    }
+
+    // Inicialización por defecto desde semillas
     this.skus = expandir<Sku>(SEED_DATA_RAW.skus);
     this.proveedores = expandir<Proveedor>(SEED_DATA_RAW.proveedores);
     this.zonas = expandir<Zona>(SEED_DATA_RAW.zonas);
     this.campanias = expandir<Campania>(SEED_DATA_RAW.campanias);
     this.usuarios = expandir<Usuario>(SEED_DATA_RAW.usuarios);
     this.politica = expandir<Politica>(SEED_DATA_RAW.politica);
-    
-    // Inicializar versiones de política de inventario
+
     this.politicaVersiones = this.politica.map((p) => ({
       ...p,
       version_id: `VER-${p.sku_id}-v1`,
@@ -107,6 +147,44 @@ class MockDataProvider implements DataProvider {
     this.calidad = [...(SEED_DATA_RAW.calidad as IssueCalidad[])];
     this.auditoria = [...(SEED_DATA_RAW.auditoria as RegistroAuditoria[])];
     this.permisos = SEED_DATA_RAW.permisos as unknown as PermisosMapa;
+
+    this.persistLocal();
+  }
+
+  private persistLocal(): void {
+    if (typeof localStorage !== 'undefined') {
+      try {
+        const payload = {
+          skus: this.skus,
+          proveedores: this.proveedores,
+          zonas: this.zonas,
+          campanias: this.campanias,
+          usuarios: this.usuarios,
+          politica: this.politica,
+          politicaVersiones: this.politicaVersiones,
+          sugerencias: this.sugerencias,
+          umbrales: this.umbrales,
+          reorden: this.reorden,
+          proyecciones: this.proyecciones,
+          alertas: this.alertas,
+          recomendaciones: this.recomendaciones,
+          decisiones: this.decisiones,
+          consumoMensual: this.consumoMensual,
+          toneladasFruta: this.toneladasFruta,
+          kpis: this.kpis,
+          pronosticos: this.pronosticos,
+          revisiones: this.revisiones,
+          accionesRevision: this.accionesRevision,
+          cargas: this.cargas,
+          calidad: this.calidad,
+          auditoria: this.auditoria,
+          permisos: this.permisos,
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (e) {
+        console.warn('No se pudo guardar en localStorage:', e);
+      }
+    }
   }
 
   async getSkus(): Promise<Sku[]> {
@@ -224,14 +302,13 @@ class MockDataProvider implements DataProvider {
 
   async submitDecision(data: Omit<Decision, 'decision_id'>): Promise<Decision> {
     await delay();
-    const newId = `DEC-${data.periodo.replace('-', '')}-${this.decisiones.length + 1}`;
+    const newId = `DEC-${data.periodo.replace('-', '')}-${generarUUID().substring(0, 6)}`;
     const newDecision: Decision = {
       ...data,
       decision_id: newId,
     };
     this.decisiones.unshift(newDecision);
 
-    // Update recommendation state if matches sku and period
     const reco = this.recomendaciones.find(
       (r) => r.sku_id === data.sku_id && r.periodo === data.periodo
     );
@@ -239,6 +316,7 @@ class MockDataProvider implements DataProvider {
       reco.estado = data.accion;
     }
 
+    this.persistLocal();
     return newDecision;
   }
 
@@ -250,6 +328,7 @@ class MockDataProvider implements DataProvider {
     const reco = this.recomendaciones.find((r) => r.reco_id === recoId);
     if (reco) {
       reco.estado = estado;
+      this.persistLocal();
     }
   }
 
@@ -258,7 +337,6 @@ class MockDataProvider implements DataProvider {
     const review = this.revisiones.find((r) => r.review_id === reviewId);
     const periodo = review ? review.periodo : '2026-08';
 
-    // Verificar si hay recomendaciones pendientes en ese periodo
     const pendingRecos = this.recomendaciones.filter(
       (r) => r.periodo === periodo && r.estado === 'PENDIENTE'
     );
@@ -276,6 +354,7 @@ class MockDataProvider implements DataProvider {
     if (review) {
       review.estado = 'CERRADA';
       review.decisiones_pendientes = 0;
+      this.persistLocal();
     }
     return { success: true };
   }
@@ -284,9 +363,10 @@ class MockDataProvider implements DataProvider {
     await delay();
     const newAccion: AccionRevision = {
       ...accionData,
-      accion_id: `ACC-${Math.floor(100 + Math.random() * 900)}`,
+      accion_id: `ACC-${generarUUID().substring(0, 6)}`,
     };
     this.accionesRevision.unshift(newAccion);
+    this.persistLocal();
     return newAccion;
   }
 
@@ -298,18 +378,79 @@ class MockDataProvider implements DataProvider {
     const acc = this.accionesRevision.find((a) => a.accion_id === accionId);
     if (acc) {
       Object.assign(acc, updates);
+      this.persistLocal();
     }
   }
 
-  async saveCarga(carga: CargaDatos, issues: IssueCalidad[]): Promise<CargaDatos> {
+  /**
+   * Procesa y confirma la carga de datos persistiendo efectivamente las filas válidas
+   * en el almacenamiento del sistema y recalculando ROP e inventarios.
+   */
+  async saveCarga(
+    carga: CargaDatos,
+    issues: IssueCalidad[],
+    filasValidasRows?: any[]
+  ): Promise<CargaDatos> {
     await delay();
     this.cargas.unshift(carga);
     if (issues && issues.length > 0) {
       this.calidad.unshift(...issues);
     }
-    // Toda carga confirmada genera una fila en app_auditoria
+
+    // Efectiva alimentación del sistema con filas válidas
+    if (Array.isArray(filasValidasRows) && filasValidasRows.length > 0) {
+      filasValidasRows.forEach((row) => {
+        const skuId = String(row.sku_id ?? row.SKU ?? '').trim();
+        const cant = Number(row.cantidad ?? row.CANTIDAD ?? row.inventario_disponible);
+        const periodo = String(row.periodo ?? row.PERIODO ?? '2026-08').trim();
+        const zonaId = String(row.zona_id ?? row.ZONA_ID ?? 'ZONA-1').trim();
+
+        if (skuId && !isNaN(cant) && cant > 0) {
+          // 1. Insertar / Actualizar en consumoMensual
+          const idxCons = this.consumoMensual.findIndex(
+            (c) => c.sku_id === skuId && c.periodo === periodo && c.zona_id === zonaId
+          );
+          if (idxCons !== -1) {
+            this.consumoMensual[idxCons].cantidad = cant;
+          } else {
+            this.consumoMensual.push({
+              sku_id: skuId,
+              periodo: periodo,
+              zona_id: zonaId,
+              cantidad: cant,
+            });
+          }
+
+          // 2. Recalcular ROP y Cobertura para el SKU impactado
+          const reordenItem = this.reorden.find((r) => r.sku_id === skuId);
+          if (reordenItem) {
+            const skuMaster = this.skus.find((s) => s.sku_id === skuId);
+            const pol = this.politica.find((p) => p.sku_id === skuId);
+            const nivelServ = pol ? pol.nivel_servicio : 0.98;
+            const lt = pol ? pol.lead_time_plan_dias : 30;
+
+            const rec = evaluarPuntoReorden(
+              cant, // disponible
+              reordenItem.inventario_comprometido,
+              reordenItem.inventario_transito,
+              cant / 30, // consumo prom
+              reordenItem.desv_std_consumo_diario,
+              lt,
+              nivelServ,
+              [cant, cant * 0.9, cant * 1.1],
+              skuId,
+              skuMaster ? skuMaster.clase_abc : 'A'
+            );
+
+            Object.assign(reordenItem, rec);
+          }
+        }
+      });
+    }
+
+    // Auditoría inmutable de carga
     this.auditoria.unshift({
-      log_id: `AUD-${Date.now().toString().slice(-6)}`,
+      log_id: `AUD-${generarUUID().substring(0, 8)}`,
       timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
       usuario_id: carga.usuario_id || 'USR-002',
       entidad: 'fact_cargas',
@@ -317,9 +458,11 @@ class MockDataProvider implements DataProvider {
       campo: 'estado',
       valor_anterior: '',
       valor_nuevo: carga.estado,
-      motivo: `Carga de datos confirmada (${carga.archivo}) en ${carga.tabla_destino} con ${carga.filas_ok} filas procesadas`,
+      motivo: `Carga de datos confirmada (${carga.archivo}) en ${carga.tabla_destino} con ${carga.filas_ok} filas efectivamente procesadas (Idempotencia: ${carga.upload_id})`,
       version_regla: RULES_VERSION,
     });
+
+    this.persistLocal();
     return carga;
   }
 
@@ -330,10 +473,31 @@ class MockDataProvider implements DataProvider {
       const oldSku = this.skus[index];
       this.skus[index] = { ...updatedSku };
 
-      // Registrar auditoria si cambia clase_abc
+      // Si cambia la Clase ABC, recalcular ROP, SS y nivel de servicio de forma automática
       if (oldSku.clase_abc !== updatedSku.clase_abc) {
+        const reordenItem = this.reorden.find((r) => r.sku_id === updatedSku.sku_id);
+        if (reordenItem) {
+          reordenItem.clase_abc = updatedSku.clase_abc;
+          const nivelServ = updatedSku.clase_abc === 'A' ? 0.98 : updatedSku.clase_abc === 'B' ? 0.95 : 0.90;
+
+          const rec = evaluarPuntoReorden(
+            reordenItem.inventario_disponible,
+            reordenItem.inventario_comprometido,
+            reordenItem.inventario_transito,
+            reordenItem.consumo_prom_diario,
+            reordenItem.desv_std_consumo_diario,
+            reordenItem.lead_time_dias,
+            nivelServ,
+            [reordenItem.consumo_prom_diario * 30, reordenItem.consumo_prom_diario * 30],
+            updatedSku.sku_id,
+            updatedSku.clase_abc
+          );
+
+          Object.assign(reordenItem, rec);
+        }
+
         this.auditoria.unshift({
-          log_id: `AUD-${Date.now().toString().slice(-6)}`,
+          log_id: `AUD-${generarUUID().substring(0, 8)}`,
           timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
           usuario_id: 'USR-001',
           entidad: 'dim_sku',
@@ -341,10 +505,11 @@ class MockDataProvider implements DataProvider {
           campo: 'clase_abc',
           valor_anterior: oldSku.clase_abc,
           valor_nuevo: updatedSku.clase_abc,
-          motivo: 'Reclasificación ABC en Maestro SKU',
-          version_regla: 'RB-2026.08',
+          motivo: `Reclasificación ABC en Maestro SKU con recálculo automático de SS (${reordenItem?.stock_seguridad}) y ROP (${reordenItem?.punto_reorden})`,
+          version_regla: RULES_VERSION,
         });
       }
+      this.persistLocal();
     }
     return updatedSku;
   }
@@ -356,6 +521,7 @@ class MockDataProvider implements DataProvider {
     );
     if (index !== -1) {
       this.proveedores[index] = { ...updatedProv };
+      this.persistLocal();
     }
     return updatedProv;
   }
@@ -372,9 +538,8 @@ class MockDataProvider implements DataProvider {
     usuarioId: string
   ): Promise<PoliticaVersion> {
     await delay();
-    const today = new Date().toISOString().split('T')[0];
+    const today = getSystemDate();
 
-    // Marcar versiones anteriores como HISTORICA
     this.politicaVersiones.forEach((pv) => {
       if (pv.sku_id === skuId && pv.estado_version === 'VIGENTE') {
         pv.estado_version = 'HISTORICA';
@@ -402,7 +567,6 @@ class MockDataProvider implements DataProvider {
       ...updates,
     };
 
-    // Actualizar objeto en politica
     const polIndex = this.politica.findIndex((p) => p.sku_id === skuId);
     if (polIndex !== -1) {
       this.politica[polIndex] = newPolData;
@@ -422,9 +586,8 @@ class MockDataProvider implements DataProvider {
 
     this.politicaVersiones.unshift(newVersion);
 
-    // Registro de auditoria obligado
     this.auditoria.unshift({
-      log_id: `AUD-${Date.now().toString().slice(-6)}`,
+      log_id: `AUD-${generarUUID().substring(0, 8)}`,
       timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
       usuario_id: usuarioId,
       entidad: 'param_politica_inventario',
@@ -433,9 +596,10 @@ class MockDataProvider implements DataProvider {
       valor_anterior: JSON.stringify(currentPol),
       valor_nuevo: JSON.stringify(updates),
       motivo: motivo,
-      version_regla: 'RB-2026.08',
+      version_regla: RULES_VERSION,
     });
 
+    this.persistLocal();
     return newVersion;
   }
 
@@ -449,17 +613,18 @@ class MockDataProvider implements DataProvider {
   ): Promise<SugerenciaParametro> {
     await delay();
     const sug: SugerenciaParametro = {
-      sugerencia_id: `SUG-${Date.now().toString().slice(-5)}`,
+      sugerencia_id: `SUG-${generarUUID().substring(0, 6)}`,
       sku_id: skuId,
       campo,
       valor_anterior: valorAnterior,
       valor_sugerido: valorSugerido,
       motivo,
       solicitante_id: usuarioId,
-      fecha_solicitud: new Date().toISOString().split('T')[0],
+      fecha_solicitud: getSystemDate(),
       estado: 'PENDIENTE_APROBACION',
     };
     this.sugerencias.unshift(sug);
+    this.persistLocal();
     return sug;
   }
 
@@ -487,6 +652,7 @@ class MockDataProvider implements DataProvider {
       );
     } else {
       sug.estado = 'RECHAZADA';
+      this.persistLocal();
     }
   }
 
@@ -506,20 +672,20 @@ class MockDataProvider implements DataProvider {
     };
     this.usuarios.push(newUsuario);
 
-    // Registrar auditoría
     this.auditoria.unshift({
-      log_id: `AUD-${Date.now()}`,
+      log_id: `AUD-${generarUUID().substring(0, 8)}`,
       timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
-      usuario_id: 'USR-009', // ADMIN
+      usuario_id: 'USR-009',
       entidad: 'app_usuarios',
       entidad_id: newId,
       campo: 'alta_usuario',
       valor_anterior: '',
       valor_nuevo: `${newUsuario.nombre} (${newUsuario.rol})`,
       motivo: 'Alta de usuario administrador/operativo',
-      version_regla: 'RB-2026.08',
+      version_regla: RULES_VERSION,
     });
 
+    this.persistLocal();
     return newUsuario;
   }
 
@@ -534,7 +700,7 @@ class MockDataProvider implements DataProvider {
       usr.estado = nuevoEstado;
 
       this.auditoria.unshift({
-        log_id: `AUD-${Date.now()}`,
+        log_id: `AUD-${generarUUID().substring(0, 8)}`,
         timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
         usuario_id: 'USR-009',
         entidad: 'app_usuarios',
@@ -543,8 +709,10 @@ class MockDataProvider implements DataProvider {
         valor_anterior: prev,
         valor_nuevo: nuevoEstado,
         motivo: `Cambio de estado del usuario a ${nuevoEstado} (baja lógica)`,
-        version_regla: 'RB-2026.08',
+        version_regla: RULES_VERSION,
       });
+
+      this.persistLocal();
     }
   }
 
@@ -559,7 +727,7 @@ class MockDataProvider implements DataProvider {
       usr.rol = nuevoRol;
 
       this.auditoria.unshift({
-        log_id: `AUD-${Date.now()}`,
+        log_id: `AUD-${generarUUID().substring(0, 8)}`,
         timestamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
         usuario_id: 'USR-009',
         entidad: 'app_usuarios',
@@ -568,8 +736,10 @@ class MockDataProvider implements DataProvider {
         valor_anterior: prev,
         valor_nuevo: nuevoRol,
         motivo: 'Reasignación de rol de usuario',
-        version_regla: 'RB-2026.08',
+        version_regla: RULES_VERSION,
       });
+
+      this.persistLocal();
     }
   }
 }

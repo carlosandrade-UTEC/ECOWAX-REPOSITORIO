@@ -1,5 +1,6 @@
 import { Sku, Campania } from '../types';
 import { formatoNumero } from './formato';
+import { getSystemDate } from './clock';
 
 export interface ConsecuenciaResultado {
   coberturaDias: number;
@@ -12,6 +13,7 @@ export interface ConsecuenciaResultado {
   ajustadoLote: boolean;
   cantidadAjustada: number;
   mensajeAjuste?: string;
+  requiereSupuestoConsumo?: boolean;
 }
 
 const MESES_NOMBRES = [
@@ -64,15 +66,28 @@ export function calcularConsecuenciaMotor(
   cantidad: number,
   inventarioActual: number,
   consumoDiario: number,
-  campanias: Campania[] = []
+  campanias: Campania[] = [],
+  supuestoConsumoDiario?: number
 ): ConsecuenciaResultado {
   const { cantidadAjustada, ajustado, mensaje } = ajustarLoteYMultiplo(cantidad, sku);
   
   const totalStock = inventarioActual + cantidadAjustada;
-  const cDiario = consumoDiario > 0 ? consumoDiario : 10;
+  let cDiario = consumoDiario;
+  let requiereSupuesto = false;
+
+  if (cDiario <= 0) {
+    if (supuestoConsumoDiario && supuestoConsumoDiario > 0) {
+      cDiario = supuestoConsumoDiario;
+    } else {
+      cDiario = 1; // Mínimo seguro para evitar división por cero, marcando supuesto
+      requiereSupuesto = true;
+    }
+  }
+
   const coberturaDias = Math.round(totalStock / cDiario);
 
-  const fechaBase = new Date('2026-08-07');
+  const fechaBaseIso = getSystemDate();
+  const fechaBase = new Date(fechaBaseIso);
   const fechaQuiebre = new Date(fechaBase);
   fechaQuiebre.setDate(fechaQuiebre.getDate() + coberturaDias);
 
@@ -86,7 +101,6 @@ export function calcularConsecuenciaMotor(
   let campaniaNombre = '';
 
   for (const camp of campanias) {
-    // Si la campaña abarca entre mes_inicio y mes_fin
     if (camp.mes_inicio <= camp.mes_fin) {
       if (mesNumero >= camp.mes_inicio && mesNumero <= camp.mes_fin) {
         enVentana = true;
@@ -94,7 +108,6 @@ export function calcularConsecuenciaMotor(
         break;
       }
     } else {
-      // Cruza el año (ej Nov 11 - Mar 3)
       if (mesNumero >= camp.mes_inicio || mesNumero <= camp.mes_fin) {
         enVentana = true;
         campaniaNombre = camp.cultivo;
@@ -112,6 +125,10 @@ export function calcularConsecuenciaMotor(
     advertenciaTexto += `.`;
   }
 
+  if (requiereSupuesto) {
+    advertenciaTexto += ` [Aviso: Consumo diario del SKU era 0; se requiere definir un supuesto explícito de consumo S&OP].`;
+  }
+
   return {
     coberturaDias,
     fechaQuiebreIso: fechaQuiebre.toISOString().split('T')[0],
@@ -123,5 +140,6 @@ export function calcularConsecuenciaMotor(
     ajustadoLote: ajustado,
     cantidadAjustada,
     mensajeAjuste: mensaje,
+    requiereSupuestoConsumo: requiereSupuesto,
   };
 }
