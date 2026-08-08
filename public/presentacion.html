@@ -881,7 +881,7 @@
         </div>
 
         <!-- Slide 17 -->
-        <div class="slide show-alert" data-notes="Insight 3: La cobertura llega a su mínimo en Diciembre/Enero, justo cuando arranca la campaña de mango. Compran cuando ven que falta cera, pero con 8 semanas de lead time, la carga llega tarde y tienen que pagar fletes urgentes.">
+        <div class="slide show-alert" data-notes="Insight 3: La cobertura de inventario cae a 36–38 días cuando la meta es 75 — menos de la mitad del colchón necesario, justo en el mes que abre cada campaña pico. No es que el almacén llegue a cero. Es que, con la mitad del colchón objetivo, cualquier imprevisto — una de las demoras adicionales del proveedor, un pico de demanda — ya no tiene margen de reacción. El lead time de 4 a 8 semanas es mayor que el tiempo que queda para corregir.">
             <div class="tag-demo">Cifras ilustrativas construidas para demostrar la lógica de decisión</div>
             <div style="font-family: var(--font-mono); font-size: 16px; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; margin-top: -10px;">→ Hallazgo derivado del Producto 1 (Demand & Supply Intelligence)</div>
             <h2 style="margin-top: 0;">Insight 3: la cobertura toca su mínimo en la campaña</h2>
@@ -890,10 +890,19 @@
                 <div class="col-half" style="position: relative;">
                     <div class="chart-container" style="height: 550px;"><canvas id="insight3Chart"></canvas></div>
                 </div>
-                <div class="col-half" style="display: flex; flex-direction: column; justify-content: center;">
-                    <p style="font-size: 28px; line-height: 1.5;">
-                        La cobertura toca un mínimo de <span class="data alert-text">36-44 días</span> justo en campaña alta (meta: 75 días).
-                    </p>
+                <div class="col-half" style="display: flex; flex-direction: column; justify-content: center; gap: 24px;">
+                    <div>
+                        <div style="font-family: var(--font-mono); font-size: 14px; color: var(--accent); font-weight: bold; letter-spacing: 1px; margin-bottom: 6px; text-transform: uppercase;">HALLAZGO</div>
+                        <p style="font-size: 22px; line-height: 1.4; color: var(--text-high); margin: 0;">
+                            La cobertura de inventario cae a <span class="data alert-text">36–38 días</span> cuando la meta es 75 — menos de la mitad del colchón necesario, justo en el mes que abre cada campaña pico.
+                        </p>
+                    </div>
+                    <div>
+                        <div style="font-family: var(--font-mono); font-size: 14px; color: var(--alert); font-weight: bold; letter-spacing: 1px; margin-bottom: 6px; text-transform: uppercase;">POR QUÉ ES CLAVE</div>
+                        <p style="font-size: 20px; line-height: 1.4; color: var(--text-high); margin: 0;">
+                            No es que el almacén llegue a cero. Es que, con la mitad del colchón objetivo, cualquier imprevisto — una demora adicional del proveedor, un pico de demanda — ya no tiene margen de reacción. El lead time de 4 a 8 semanas es mayor que el tiempo que queda para corregir.
+                        </p>
+                    </div>
                 </div>
             </div>
             
@@ -1735,7 +1744,36 @@
                     },
                     options: { 
                         responsive: true, maintainAspectRatio: false, 
-                        plugins: { datalabels: {display: false}, legend: { display: true, labels: {font: {size: 20}} } },
+                        plugins: { 
+                            datalabels: {display: false}, 
+                            legend: { display: true, labels: {font: {size: 20}} },
+                            annotation: {
+                                annotations: {
+                                    box1: {
+                                        type: 'box',
+                                        yScaleID: 'y',
+                                        yMin: 0,
+                                        yMax: 75,
+                                        backgroundColor: 'rgba(211, 47, 47, 0.08)',
+                                        borderColor: 'transparent',
+                                        label: {
+                                            display: true,
+                                            content: 'zona de exposición — por debajo de la meta (75 d)',
+                                            position: {
+                                                x: 'center',
+                                                y: 'top'
+                                            },
+                                            color: '#D32F2F',
+                                            font: {
+                                                size: 14,
+                                                style: 'italic',
+                                                weight: 'bold'
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        },
                         scales: {
                             y: { type: 'linear', display: true, position: 'left', title: {display: true, text: 'Cobertura (días)', font: {size: 18}} },
                             y1: { type: 'linear', display: true, position: 'right', title: {display: true, text: 'Stock (kg)', font: {size: 18}}, grid: {drawOnChartArea: false} }
